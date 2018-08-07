@@ -1,0 +1,187 @@
+#add-a-file {
+  padding: 20px;
+}
+
+#json {
+  height: 100vh;
+  border: none;
+  font-size: 0.9em;
+}
+
+.row {
+  display: flex;
+  position: relative;
+  height: 55px;
+  padding: 5px;
+  margin-bottom: 5px;
+  background-color: #E0E0E0;
+}
+
+.row .id-and-class {
+  position: absolute;
+  right: 2px;
+  top: 50px;
+  font-size: 0.8em;
+  text-align: right;
+  color: #757575;
+}
+
+.row .columns {
+  display: flex;
+  flex-grow: 1;
+}
+
+.row .control {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.column {
+  display: flex;
+  align-items: center;
+  padding: 0 5px 0 10px;
+  background-color: #FFFFFF;
+}
+
+.column:not(:last-child) {
+  margin-right: 5px;
+}
+
+.column.basis-1 {
+  flex-basis: 100%;
+}
+
+.column.basis-2 {
+  flex-basis: 50%;
+}
+
+.column.basis-3 {
+  flex-basis: 33.33%;
+}
+
+.column.basis-4 {
+  flex-basis: 25%;
+}
+
+.column .active, .column .empty {
+  display: flex;
+  align-items: center;
+  flex-basis: 100%;
+}
+
+.column .active {
+  justify-content: space-between;
+}
+
+.column .empty {
+  justify-content: flex-end;
+}
+
+.column .title {
+  font-weight: 700;
+}
+
+/* Widget */
+
+#widgets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 60px;
+  grid-gap: 5px;
+  width: 500px;
+}
+
+#widgets .widget {
+  display: flex;
+  align-items: center;
+  border: 1px solid #E0E0E0;
+  padding: 15px;
+  cursor: pointer;
+  transition-duration: 400ms;
+}
+
+#widgets .widget:hover {
+  background-color: #E0E0E0;
+}
+
+/* Quill */
+
+.quill {
+  width: 500px;
+  margin-bottom: 10px;
+}
+
+.ql-snow.ql-toolbar button {
+  min-width: 0;
+}
+
+/* Html */
+
+.html {
+  width: 500px;
+}
+
+/* Images Field */
+
+.images-field {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-auto-rows: 60px;
+  grid-gap: 5px;
+  width: 350px;
+  margin-bottom: 10px;
+}
+
+.images-field .thumb {
+  position: relative;
+  overflow: hidden;
+}
+
+.images-field .hidden {
+  display: none;
+}
+
+.images-field img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.images-field button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  background-color: #F44336;
+  border-radius: 0;
+  color: #FFFFFF;
+}
+
+.images-field button:hover {
+  background-color: #D32F2F;
+  color: #FFFFFF;
+}
+
+.images-field i {
+  font-size: 16px;
+}
+
+.images-field .add {
+  min-width: 0;
+  width: auto;
+  height: auto;
+  background-color: #1565C0;
+}
+
+.images-field .add:hover {
+  background-color: #2196F3;
+}
+
+.images-field .add i {
+  font-size: 24px;
+}
