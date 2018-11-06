@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="https://cdn.quilljs.com/1.2.4/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.2.4/quill.min.js"></script>
+    <link rel="stylesheet" href="site-builder.css">
+    <script src="site-builder.js"></script>
+</head>
+<body>
+    
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+
+    <div id="container"></div>
+
+    <script>
+        SiteBuilder.init({
+            container: container,
+            schema: SiteBuilder.defaultSchema,
+            data:  `
+                [
+                    {
+                        "type": "Row",
+                        "columns": [
+                            {
+                                "rows": [
+                                    {
+                                        "type": "Text",
+                                        "content": "<p>jjjjjj</p>",
+                                        "className": "ddddd"
+                                    },
+                                    {
+                                        "type": "Row",
+                                        "columns": [
+                                            {
+                                                "rows": [
+                                                    {
+                                                        "type": "Text",
+                                                        "content": "<p>ff</p>",
+                                                        "className": ""
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "rows": [
+                                                    {
+                                                        "type": "Text",
+                                                        "content": "<p>tttttttt</p>",
+                                                        "className": ""
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "rows": [
+                                    {
+                                        "type": "Html",
+                                        "html": "wwrwr"
+                                    },
+                                    {
+                                        "type": "Text",
+                                        "content": "<p>aseffas</p>",
+                                        "className": ""
+                                    },
+                                    {
+                                        "type": "Html",
+                                        "html": "eeeeeeeedffd"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            `
+        });
+    </script>
+
+</body>
+</html>
