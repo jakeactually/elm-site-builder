@@ -5,73 +5,71 @@ import List exposing (map)
 import Schema exposing (..)
 
 type Column = Column
-  { props : List Field
+  { form : Form
   , rows : List Row
   }
 
-newColumn : List Row -> Column
-newColumn rows = Column
-  { props =
-    [ Field "id" <| TextValue ""
-    , Field "class" <| TextValue ""
-    ]
-  , rows = rows
+newColumn : Column
+newColumn = Column
+  { form = columnForm
+  , rows = []
   }
 
-type Row
-  = Block
-    { name : String
-    , fields : List Field
-    , dragged : Bool
-    }
-  | Row 
-    { props : List Field
-    , dragged : Bool
-    , columns : List Column
-    }
+columnForm : Form
+columnForm = Form "Column"
+  [ Field "id" <| TextValue ""
+  , Field "class" <| TextValue ""
+  ]
 
-newRow : List Column -> Row
-newRow columns = Row
-  { props =
-    [ Field "id" <| TextValue ""
-    , Field "class" <| TextValue ""
-    ]
+type Row = Row
+  { isBlock : Bool
+  , form : Form
+  , columns : List Column
+  , dragged : Bool
+  , isTarget : Bool
+  }
+
+setIsBlock : Bool -> Row -> Row
+setIsBlock isBlock (Row row) = Row { row | isBlock = isBlock }
+
+setForm : Form -> Row -> Row
+setForm form (Row row) = Row { row | form = form }
+
+setColumns : List Column -> Row -> Row
+setColumns columns (Row row) = Row { row | columns = columns }
+
+type Form = Form String (List Field)
+
+newRow : Row
+newRow = Row
+  { isBlock = False
+  , form = rowForm
+  , columns = []
   , dragged = False
-  , columns = columns
+  , isTarget = False
   }
 
-rowProps : List Field -> Row
-rowProps fields = Block
-  { name = "RowProps"
-  , fields = fields
-  , dragged = False
-  }
-
-columnProps : List Field -> Row
-columnProps fields = Block
-  { name = "ColumnProps"
-  , fields = fields
-  , dragged = False
-  }
-
-makeBlock : String -> List FieldSchema -> Row
-makeBlock name fields = Block
-  { name = name
-  , fields = map makeField fields
-  , dragged = False
-  }
+rowForm : Form
+rowForm = Form "Row"
+  [ Field "id" <| TextValue ""
+  , Field "class" <| TextValue ""
+  ]
 
 type ColumnMsg
   = SelectBlock
-  | AddBlock Row
-  | EditColumn Row
+  | AddBlock Form
+  | AddRow
+  | EditColumn Form
+  | SaveColumn Form
+  | GoLeft
+  | GoRight
   | DeleteColumn
   | RowMsg Int RowMsg
 
 type RowMsg
   = AddColumn
-  | Edit Row
-  | Save Row
+  | Edit Form
+  | Save Form
   | Duplicate
   | GoUp
   | GoDown

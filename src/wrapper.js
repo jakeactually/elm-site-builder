@@ -75,9 +75,18 @@ const SiteBuilder = (() => {
                 node: options.container,
                 flags: {
                     schema: options.schema || defaultSchema,
-                    data: options.data
+                    data: options.data,
+                    thumbnailsUrl: options.thumbnailsUrl
                 }
             });
+
+            sb.ports.openFileManager.subscribe(() => {
+                options.fileManager.open();
+            });
+
+            options.fileManager.onClose = files => {
+                sb.ports.fileManager.send(files);
+            };
         }
     };
 })();

@@ -4393,6 +4393,12 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Field$Model$ImageValue = function (a) {
+	return {$: 'ImageValue', a: a};
+};
+var author$project$Field$Model$ImagesValue = function (a) {
+	return {$: 'ImagesValue', a: a};
+};
 var author$project$Field$Model$RichTextValue = function (a) {
 	return {$: 'RichTextValue', a: a};
 };
@@ -4403,6 +4409,12 @@ var author$project$Model$FieldInput = F2(
 	function (a, b) {
 		return {$: 'FieldInput', a: a, b: b};
 	});
+var author$project$Model$NoMsg = {$: 'NoMsg'};
+var author$project$Builder$Form = F2(
+	function (a, b) {
+		return {$: 'Form', a: a, b: b};
+	});
+var author$project$Builder$NoRowMsg = {$: 'NoRowMsg'};
 var author$project$Builder$SelectBlock = {$: 'SelectBlock'};
 var author$project$Builder$Row = function (a) {
 	return {$: 'Row', a: a};
@@ -4414,7 +4426,6 @@ var author$project$Field$Model$Field = F2(
 var author$project$Field$Model$TextValue = function (a) {
 	return {$: 'TextValue', a: a};
 };
-var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
@@ -4499,56 +4510,106 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0.a;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Builder$newRow = function (columns) {
-	return author$project$Builder$Row(
-		{
-			columns: columns,
-			dragged: false,
-			props: _List_fromArray(
-				[
-					A2(
-					author$project$Field$Model$Field,
-					'id',
-					author$project$Field$Model$TextValue('')),
-					A2(
-					author$project$Field$Model$Field,
-					'class',
-					author$project$Field$Model$TextValue(''))
-				])
-		});
-};
-var author$project$Builder$Column = function (a) {
-	return {$: 'Column', a: a};
-};
+var author$project$Builder$rowForm = A2(
+	author$project$Builder$Form,
+	'Row',
+	_List_fromArray(
+		[
+			A2(
+			author$project$Field$Model$Field,
+			'id',
+			author$project$Field$Model$TextValue('')),
+			A2(
+			author$project$Field$Model$Field,
+			'class',
+			author$project$Field$Model$TextValue(''))
+		]));
+var elm$core$Basics$False = {$: 'False'};
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
-var author$project$Builder$newColumn = function (rows) {
-	return author$project$Builder$Column(
-		{
-			props: _List_fromArray(
-				[
-					A2(
-					author$project$Field$Model$Field,
-					'id',
-					author$project$Field$Model$TextValue('')),
-					A2(
-					author$project$Field$Model$Field,
-					'class',
-					author$project$Field$Model$TextValue(''))
-				]),
-			rows: rows
-		});
+var author$project$Builder$newRow = author$project$Builder$Row(
+	{columns: _List_Nil, dragged: false, form: author$project$Builder$rowForm, isBlock: false, isTarget: false});
+var author$project$Builder$Column = function (a) {
+	return {$: 'Column', a: a};
 };
-var author$project$Builder$Block = function (a) {
-	return {$: 'Block', a: a};
-};
-var author$project$Field$Model$ImageValue = function (a) {
-	return {$: 'ImageValue', a: a};
-};
-var author$project$Field$Model$ImagesValue = function (a) {
-	return {$: 'ImagesValue', a: a};
-};
+var author$project$Builder$columnForm = A2(
+	author$project$Builder$Form,
+	'Column',
+	_List_fromArray(
+		[
+			A2(
+			author$project$Field$Model$Field,
+			'id',
+			author$project$Field$Model$TextValue('')),
+			A2(
+			author$project$Field$Model$Field,
+			'class',
+			author$project$Field$Model$TextValue(''))
+		]));
+var author$project$Builder$newColumn = author$project$Builder$Column(
+	{form: author$project$Builder$columnForm, rows: _List_Nil});
+var author$project$Builder$setForm = F2(
+	function (form, _n0) {
+		var row = _n0.a;
+		return author$project$Builder$Row(
+			_Utils_update(
+				row,
+				{form: form}));
+	});
+var author$project$Builder$setIsBlock = F2(
+	function (isBlock, _n0) {
+		var row = _n0.a;
+		return author$project$Builder$Row(
+			_Utils_update(
+				row,
+				{isBlock: isBlock}));
+	});
+var author$project$Json$buildColumn = F3(
+	function (id, _class, rows) {
+		return author$project$Builder$Column(
+			{
+				form: A2(
+					author$project$Builder$Form,
+					'Column',
+					_List_fromArray(
+						[
+							A2(
+							author$project$Field$Model$Field,
+							'id',
+							author$project$Field$Model$TextValue(id)),
+							A2(
+							author$project$Field$Model$Field,
+							'class',
+							author$project$Field$Model$TextValue(_class))
+						])),
+				rows: rows
+			});
+	});
+var author$project$Json$buildRow = F3(
+	function (id, _class, columns) {
+		return author$project$Builder$Row(
+			{
+				columns: columns,
+				dragged: false,
+				form: A2(
+					author$project$Builder$Form,
+					'Row',
+					_List_fromArray(
+						[
+							A2(
+							author$project$Field$Model$Field,
+							'id',
+							author$project$Field$Model$TextValue(id)),
+							A2(
+							author$project$Field$Model$Field,
+							'class',
+							author$project$Field$Model$TextValue(_class))
+						])),
+				isBlock: false,
+				isTarget: false
+			});
+	});
 var author$project$Field$Model$TextAreaValue = function (a) {
 	return {$: 'TextAreaValue', a: a};
 };
@@ -5273,13 +5334,14 @@ var elm$json$Json$Decode$dict = function (decoder) {
 		elm$json$Json$Decode$keyValuePairs(decoder));
 };
 var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$map3 = _Json_map3;
 var elm$json$Json$Decode$value = _Json_decodeValue;
 var author$project$Json$columnDecoder = function (schema) {
-	return A2(
-		elm$json$Json$Decode$map,
-		function (x) {
-			return author$project$Builder$newColumn(x);
-		},
+	return A4(
+		elm$json$Json$Decode$map3,
+		author$project$Json$buildColumn,
+		A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
+		A2(elm$json$Json$Decode$field, 'class', elm$json$Json$Decode$string),
 		A2(
 			elm$json$Json$Decode$field,
 			'rows',
@@ -5300,21 +5362,24 @@ var author$project$Json$rowDecoder = F2(
 			return A2(
 				elm$json$Json$Decode$map,
 				function (dict) {
-					return author$project$Builder$Block(
-						{
-							dragged: false,
-							fields: A2(
+					return A2(
+						author$project$Builder$setForm,
+						A2(
+							author$project$Builder$Form,
+							name,
+							A2(
 								elm$core$List$filterMap,
 								author$project$Json$toField(dict),
-								fieldsSchemas),
-							name: name
-						});
+								fieldsSchemas)),
+						A2(author$project$Builder$setIsBlock, true, author$project$Builder$newRow));
 				},
 				elm$json$Json$Decode$dict(elm$json$Json$Decode$value));
 		} else {
-			return A2(
-				elm$json$Json$Decode$map,
-				author$project$Builder$newRow,
+			return A4(
+				elm$json$Json$Decode$map3,
+				author$project$Json$buildRow,
+				A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$string),
+				A2(elm$json$Json$Decode$field, 'class', elm$json$Json$Decode$string),
 				A2(
 					elm$json$Json$Decode$field,
 					'columns',
@@ -5332,9 +5397,14 @@ var author$project$Json$decode = F2(
 			str);
 		if (_n0.$ === 'Ok') {
 			var rows = _n0.a;
-			return author$project$Builder$newColumn(rows);
+			var _n1 = author$project$Builder$newColumn;
+			var c = _n1.a;
+			return author$project$Builder$Column(
+				_Utils_update(
+					c,
+					{rows: rows}));
 		} else {
-			return author$project$Builder$newColumn(_List_Nil);
+			return author$project$Builder$newColumn;
 		}
 	});
 var author$project$Schema$FieldSchema = function (a) {
@@ -5363,7 +5433,6 @@ var author$project$Schema$toFieldType = function (type_) {
 			return elm$json$Json$Decode$fail('Unsupported field type');
 	}
 };
-var elm$json$Json$Decode$map3 = _Json_map3;
 var author$project$Schema$decodeField = A4(
 	elm$json$Json$Decode$map3,
 	F3(
@@ -5393,6 +5462,10 @@ var author$project$Schema$decodeSchema = A2(
 	elm$json$Json$Decode$map,
 	elm$core$Dict$fromList,
 	elm$json$Json$Decode$list(author$project$Schema$decodeBlock));
+var elm$core$Basics$always = F2(
+	function (a, _n0) {
+		return a;
+	});
 var elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (result.$ === 'Ok') {
@@ -5402,22 +5475,30 @@ var elm$core$Result$withDefault = F2(
 			return def;
 		}
 	});
+var elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
 var author$project$Model$initModel = function (flags) {
-	var schema = A2(
+	var decodedSchema = A2(
 		elm$core$Result$withDefault,
 		elm$core$Dict$empty,
 		A2(elm$json$Json$Decode$decodeValue, author$project$Schema$decodeSchema, flags.schema));
-	return _Utils_Tuple2(
+	return A2(
+		elm$core$Tuple$pair,
 		{
-			currentBlock: author$project$Builder$newRow(_List_Nil),
 			currentBuilderMsg: author$project$Builder$SelectBlock,
-			dragging: false,
-			isNewBlock: false,
-			schema: schema,
+			currentFieldIndex: 0,
+			currentForm: A2(author$project$Builder$Form, '', _List_Nil),
+			currentRow: author$project$Builder$newRow,
+			schema: decodedSchema,
 			showEditBlockDialog: false,
-			showSelectBlockDialog: false
+			showSelectBlockDialog: false,
+			thumbnailsUrl: flags.thumbnailsUrl,
+			updater: elm$core$Result$Ok(
+				elm$core$Basics$always(author$project$Builder$NoRowMsg))
 		},
-		A2(author$project$Json$decode, schema, flags.data));
+		A2(author$project$Json$decode, decodedSchema, flags.data));
 };
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5426,6 +5507,9 @@ var author$project$Model$init = function (flags) {
 		author$project$Model$initModel(flags),
 		elm$core$Platform$Cmd$none);
 };
+var author$project$Port$fileManager = _Platform_incomingPort(
+	'fileManager',
+	elm$json$Json$Decode$list(elm$json$Json$Decode$string));
 var elm$json$Json$Decode$index = _Json_decodeIndex;
 var elm$json$Json$Decode$int = _Json_decodeInt;
 var author$project$Port$richTextInput = _Platform_incomingPort(
@@ -5442,9 +5526,17 @@ var author$project$Port$richTextInput = _Platform_incomingPort(
 				A2(elm$json$Json$Decode$index, 1, elm$json$Json$Decode$string));
 		},
 		A2(elm$json$Json$Decode$index, 0, elm$json$Json$Decode$int)));
-var author$project$Builder$rowProps = function (fields) {
-	return author$project$Builder$Block(
-		{dragged: false, fields: fields, name: 'RowProps'});
+var elm$json$Json$Encode$null = _Json_encodeNull;
+var author$project$Port$openFileManager = _Platform_outgoingPort(
+	'openFileManager',
+	function ($) {
+		return elm$json$Json$Encode$null;
+	});
+var author$project$Builder$Save = function (a) {
+	return {$: 'Save', a: a};
+};
+var author$project$Builder$SaveColumn = function (a) {
+	return {$: 'SaveColumn', a: a};
 };
 var author$project$Update$evalColumnMsg = F2(
 	function (columnMsg, context) {
@@ -5452,18 +5544,17 @@ var author$project$Update$evalColumnMsg = F2(
 			case 'SelectBlock':
 				return _Utils_update(
 					context,
-					{isNewBlock: true, showSelectBlockDialog: true});
+					{showSelectBlockDialog: true});
 			case 'EditColumn':
-				var row = columnMsg.a;
-				if (row.$ === 'Block') {
-					return _Utils_update(
-						context,
-						{currentBlock: row, showEditBlockDialog: true});
-				} else {
-					return context;
-				}
+				var form = columnMsg.a;
+				return _Utils_update(
+					context,
+					{
+						currentForm: form,
+						showEditBlockDialog: true,
+						updater: elm$core$Result$Err(author$project$Builder$SaveColumn)
+					});
 			case 'RowMsg':
-				var i = columnMsg.a;
 				var rowMsg = columnMsg.b;
 				return A2(author$project$Update$evalRowMsg, rowMsg, context);
 			default:
@@ -5474,48 +5565,33 @@ var author$project$Update$evalRowMsg = F2(
 	function (rowMsg, context) {
 		switch (rowMsg.$) {
 			case 'Edit':
+				var form = rowMsg.a;
+				return _Utils_update(
+					context,
+					{
+						currentForm: form,
+						showEditBlockDialog: true,
+						updater: elm$core$Result$Ok(author$project$Builder$Save)
+					});
+			case 'DragStart':
 				var row = rowMsg.a;
-				if (row.$ === 'Block') {
-					return _Utils_update(
-						context,
-						{currentBlock: row, isNewBlock: false, showEditBlockDialog: true});
-				} else {
-					var props = row.a.props;
-					return _Utils_update(
-						context,
-						{
-							currentBlock: author$project$Builder$rowProps(props),
-							isNewBlock: false,
-							showEditBlockDialog: true
-						});
-				}
+				return _Utils_update(
+					context,
+					{currentRow: row});
 			case 'ColumnMsg':
 				var columnMsg = rowMsg.b;
 				return A2(author$project$Update$evalColumnMsg, columnMsg, context);
-			case 'DragStart':
-				var block = rowMsg.a;
-				return _Utils_update(
-					context,
-					{currentBlock: block, dragging: true});
-			case 'DragEnd':
-				return _Utils_update(
-					context,
-					{dragging: false});
 			default:
 				return context;
 		}
 	});
-var author$project$Update$setProps = F2(
-	function (fields, row) {
-		if (row.$ === 'Block') {
-			return row;
-		} else {
-			var rowRecord = row.a;
-			return author$project$Builder$Row(
-				_Utils_update(
-					rowRecord,
-					{props: fields}));
-		}
+var author$project$Builder$setColumns = F2(
+	function (columns, _n0) {
+		var row = _n0.a;
+		return author$project$Builder$Row(
+			_Utils_update(
+				row,
+				{columns: columns}));
 	});
 var elm$core$List$drop = F2(
 	function (n, list) {
@@ -5699,7 +5775,7 @@ var elm$core$List$head = function (list) {
 };
 var author$project$Util$get = F2(
 	function (index, list) {
-		return elm$core$List$head(
+		return (index < 0) ? elm$core$Maybe$Nothing : elm$core$List$head(
 			A2(elm$core$List$drop, index, list));
 	});
 var author$project$Util$swap = F3(
@@ -5735,163 +5811,167 @@ var author$project$Util$update = F3(
 		}
 	});
 var author$project$Update$updateColumn = F2(
-	function (columnMsg, _n4) {
-		var column = _n4.a;
-		switch (columnMsg.$) {
-			case 'AddBlock':
-				var row = columnMsg.a;
-				return author$project$Builder$Column(
-					_Utils_update(
-						column,
-						{
-							rows: _Utils_ap(
-								column.rows,
-								_List_fromArray(
-									[row]))
-						}));
-			case 'RowMsg':
-				var i = columnMsg.a;
-				var rowMsg = columnMsg.b;
-				switch (rowMsg.$) {
-					case 'Save':
-						var row = rowMsg.a;
-						if (row.$ === 'Block') {
-							var name = row.a.name;
-							var fields = row.a.fields;
-							switch (name) {
-								case 'RowProps':
-									return author$project$Builder$Column(
-										_Utils_update(
-											column,
-											{
-												rows: A3(
-													author$project$Util$update,
-													author$project$Update$setProps(fields),
-													i,
-													column.rows)
-											}));
-								case 'ColumnProps':
-									return author$project$Builder$Column(
-										_Utils_update(
-											column,
-											{props: fields}));
-								default:
-									return author$project$Builder$Column(
-										_Utils_update(
-											column,
-											{
-												rows: A3(author$project$Util$set, i, row, column.rows)
-											}));
-							}
-						} else {
-							return author$project$Builder$Column(column);
+	function (columnMsg, _n3) {
+		var column = _n3.a;
+		return author$project$Builder$Column(
+			function () {
+				switch (columnMsg.$) {
+					case 'AddBlock':
+						var form = columnMsg.a;
+						return _Utils_update(
+							column,
+							{
+								rows: _Utils_ap(
+									column.rows,
+									_List_fromArray(
+										[
+											A2(
+											author$project$Builder$setForm,
+											form,
+											A2(author$project$Builder$setIsBlock, true, author$project$Builder$newRow))
+										]))
+							});
+					case 'AddRow':
+						return _Utils_update(
+							column,
+							{
+								rows: _Utils_ap(
+									column.rows,
+									_List_fromArray(
+										[
+											A2(
+											author$project$Builder$setColumns,
+											_List_fromArray(
+												[author$project$Builder$newColumn]),
+											A2(author$project$Builder$setIsBlock, false, author$project$Builder$newRow))
+										]))
+							});
+					case 'SaveColumn':
+						var form = columnMsg.a;
+						return _Utils_update(
+							column,
+							{form: form});
+					case 'RowMsg':
+						var i = columnMsg.a;
+						var rowMsg = columnMsg.b;
+						switch (rowMsg.$) {
+							case 'Duplicate':
+								return _Utils_update(
+									column,
+									{
+										rows: A2(author$project$Util$duplicate, i, column.rows)
+									});
+							case 'GoUp':
+								return _Utils_update(
+									column,
+									{
+										rows: A3(author$project$Util$swap, i, i - 1, column.rows)
+									});
+							case 'GoDown':
+								return _Utils_update(
+									column,
+									{
+										rows: A3(author$project$Util$swap, i, i + 1, column.rows)
+									});
+							case 'Delete':
+								return _Utils_update(
+									column,
+									{
+										rows: A2(author$project$Util$remove, i, column.rows)
+									});
+							case 'Drop':
+								var block = rowMsg.a;
+								return _Utils_update(
+									column,
+									{
+										rows: A3(author$project$Util$set, i, block, column.rows)
+									});
+							default:
+								return _Utils_update(
+									column,
+									{
+										rows: A3(
+											author$project$Util$update,
+											author$project$Update$updateRow(rowMsg),
+											i,
+											column.rows)
+									});
 						}
-					case 'Duplicate':
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A2(author$project$Util$duplicate, i, column.rows)
-								}));
-					case 'GoUp':
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A3(author$project$Util$swap, i, i - 1, column.rows)
-								}));
-					case 'GoDown':
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A3(author$project$Util$swap, i, i + 1, column.rows)
-								}));
-					case 'Delete':
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A2(author$project$Util$remove, i, column.rows)
-								}));
-					case 'Drop':
-						var block = rowMsg.a;
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A3(author$project$Util$set, i, block, column.rows)
-								}));
 					default:
-						return author$project$Builder$Column(
-							_Utils_update(
-								column,
-								{
-									rows: A3(
-										author$project$Util$update,
-										author$project$Update$updateRow(rowMsg),
-										i,
-										column.rows)
-								}));
+						return column;
 				}
-			default:
-				return author$project$Builder$Column(column);
-		}
+			}());
 	});
 var author$project$Update$updateRow = F2(
-	function (rowMsg, row) {
-		if (row.$ === 'Row') {
-			var columns = row.a.columns;
-			switch (rowMsg.$) {
-				case 'AddColumn':
-					return (elm$core$List$length(columns) < 4) ? author$project$Builder$newRow(
-						_Utils_ap(
-							columns,
-							_List_fromArray(
-								[
-									author$project$Builder$newColumn(_List_Nil)
-								]))) : row;
-				case 'ColumnMsg':
-					var i = rowMsg.a;
-					var columnMsg = rowMsg.b;
-					if (columnMsg.$ === 'DeleteColumn') {
-						return author$project$Builder$newRow(
-							A2(author$project$Util$remove, i, columns));
-					} else {
-						return author$project$Builder$newRow(
-							A3(
-								author$project$Util$update,
-								author$project$Update$updateColumn(columnMsg),
-								i,
-								columns));
-					}
-				default:
-					return row;
-			}
-		} else {
-			var block = row.a;
-			switch (rowMsg.$) {
-				case 'DragStart':
-					return author$project$Builder$Block(
-						_Utils_update(
-							block,
-							{dragged: true}));
-				case 'DragEnd':
-					return author$project$Builder$Block(
-						_Utils_update(
-							block,
-							{dragged: false}));
-				default:
-					return row;
-			}
-		}
+	function (rowMsg, _n0) {
+		var row = _n0.a;
+		return author$project$Builder$Row(
+			function () {
+				switch (rowMsg.$) {
+					case 'AddColumn':
+						return _Utils_update(
+							row,
+							{
+								columns: (elm$core$List$length(row.columns) < 4) ? _Utils_ap(
+									row.columns,
+									_List_fromArray(
+										[author$project$Builder$newColumn])) : row.columns
+							});
+					case 'Save':
+						var form = rowMsg.a;
+						return _Utils_update(
+							row,
+							{form: form});
+					case 'DragStart':
+						return _Utils_update(
+							row,
+							{dragged: true});
+					case 'DragEnd':
+						return _Utils_update(
+							row,
+							{dragged: false});
+					case 'ColumnMsg':
+						var i = rowMsg.a;
+						var columnMsg = rowMsg.b;
+						switch (columnMsg.$) {
+							case 'GoLeft':
+								return _Utils_update(
+									row,
+									{
+										columns: A3(author$project$Util$swap, i, i - 1, row.columns)
+									});
+							case 'GoRight':
+								return _Utils_update(
+									row,
+									{
+										columns: A3(author$project$Util$swap, i, i + 1, row.columns)
+									});
+							case 'DeleteColumn':
+								return _Utils_update(
+									row,
+									{
+										columns: A2(author$project$Util$remove, i, row.columns)
+									});
+							default:
+								return _Utils_update(
+									row,
+									{
+										columns: A3(
+											author$project$Util$update,
+											author$project$Update$updateColumn(columnMsg),
+											i,
+											row.columns)
+									});
+						}
+					default:
+						return row;
+				}
+			}());
 	});
 var author$project$Builder$AddBlock = function (a) {
 	return {$: 'AddBlock', a: a};
 };
-var author$project$Builder$Save = function (a) {
-	return {$: 'Save', a: a};
-};
+var author$project$Builder$AddRow = {$: 'AddRow'};
 var author$project$Field$Model$makeField = function (_n0) {
 	var type_ = _n0.a.type_;
 	var title = _n0.a.title;
@@ -5913,29 +5993,6 @@ var author$project$Field$Model$makeField = function (_n0) {
 			}
 		}());
 };
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
-var author$project$Builder$makeBlock = F2(
-	function (name, fields) {
-		return author$project$Builder$Block(
-			{
-				dragged: false,
-				fields: A2(elm$core$List$map, author$project$Field$Model$makeField, fields),
-				name: name
-			});
-	});
 var author$project$Builder$ColumnMsg = F2(
 	function (a, b) {
 		return {$: 'ColumnMsg', a: a, b: b};
@@ -6012,18 +6069,27 @@ var author$project$Update$updateFields = F3(
 		}
 	});
 var author$project$Update$updateBlock = F3(
-	function (i, value, block) {
-		if (block.$ === 'Block') {
-			var blockRecord = block.a;
-			return author$project$Builder$Block(
-				_Utils_update(
-					blockRecord,
-					{
-						fields: A3(author$project$Update$updateFields, i, value, blockRecord.fields)
-					}));
-		} else {
-			return block;
-		}
+	function (i, value, _n0) {
+		var name = _n0.a;
+		var fields = _n0.b;
+		return A2(
+			author$project$Builder$Form,
+			name,
+			A3(author$project$Update$updateFields, i, value, fields));
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
 	});
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -6033,10 +6099,6 @@ var elm$core$Maybe$withDefault = F2(
 		} else {
 			return _default;
 		}
-	});
-var elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
 	});
 var author$project$Update$updateContext = F3(
 	function (msg, context, column) {
@@ -6048,12 +6110,27 @@ var author$project$Update$updateContext = F3(
 						context,
 						{showSelectBlockDialog: false}),
 					column);
-			case 'HideEditBlockDialog':
+			case 'NewBlock':
+				var schemaKey = msg.a;
 				return A2(
 					elm$core$Tuple$pair,
 					_Utils_update(
 						context,
-						{showEditBlockDialog: false}),
+						{
+							currentForm: A2(
+								author$project$Builder$Form,
+								schemaKey,
+								A2(
+									elm$core$List$map,
+									author$project$Field$Model$makeField,
+									A2(
+										elm$core$Maybe$withDefault,
+										_List_Nil,
+										A2(elm$core$Dict$get, schemaKey, context.schema)))),
+							showEditBlockDialog: true,
+							showSelectBlockDialog: false,
+							updater: elm$core$Result$Err(author$project$Builder$AddBlock)
+						}),
 					column);
 			case 'FieldInput':
 				var i = msg.a;
@@ -6063,77 +6140,102 @@ var author$project$Update$updateContext = F3(
 					_Utils_update(
 						context,
 						{
-							currentBlock: A3(author$project$Update$updateBlock, i, input, context.currentBlock)
+							currentForm: A3(author$project$Update$updateBlock, i, input, context.currentForm)
 						}),
 					column);
-			case 'NewBlock':
-				var schemaKey = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						context,
-						{
-							currentBlock: A2(
-								author$project$Builder$makeBlock,
-								schemaKey,
-								A2(
-									elm$core$Maybe$withDefault,
-									_List_Nil,
-									A2(elm$core$Dict$get, schemaKey, context.schema))),
-							showEditBlockDialog: true,
-							showSelectBlockDialog: false
-						}),
-					column);
-			case 'AcceptBlock':
-				var newMsg = context.isNewBlock ? A2(
-					author$project$Update$mapColumnMsg,
-					author$project$Builder$AddBlock(context.currentBlock),
-					context.currentBuilderMsg) : A2(
-					author$project$Update$mapRowMsg,
-					author$project$Builder$Save(context.currentBlock),
-					context.currentBuilderMsg);
-				return _Utils_Tuple2(
+			case 'HideEditBlockDialog':
+				return A2(
+					elm$core$Tuple$pair,
 					_Utils_update(
 						context,
 						{showEditBlockDialog: false}),
-					A2(author$project$Update$updateColumn, newMsg, column));
-			default:
-				return _Utils_Tuple2(
+					column);
+			case 'AcceptBlock':
+				var _n1 = context.updater;
+				if (_n1.$ === 'Ok') {
+					var rowUpdater = _n1.a;
+					return A2(
+						elm$core$Tuple$pair,
+						_Utils_update(
+							context,
+							{showEditBlockDialog: false}),
+						A2(
+							author$project$Update$updateColumn,
+							A2(
+								author$project$Update$mapRowMsg,
+								rowUpdater(context.currentForm),
+								context.currentBuilderMsg),
+							column));
+				} else {
+					var columnUpdater = _n1.a;
+					return A2(
+						elm$core$Tuple$pair,
+						_Utils_update(
+							context,
+							{showEditBlockDialog: false}),
+						A2(
+							author$project$Update$updateColumn,
+							A2(
+								author$project$Update$mapColumnMsg,
+								columnUpdater(context.currentForm),
+								context.currentBuilderMsg),
+							column));
+				}
+			case 'RowBlock':
+				return A2(
+					elm$core$Tuple$pair,
 					_Utils_update(
 						context,
 						{showSelectBlockDialog: false}),
 					A2(
 						author$project$Update$updateColumn,
-						A2(
-							author$project$Update$mapColumnMsg,
-							author$project$Builder$AddBlock(
-								author$project$Builder$newRow(_List_Nil)),
-							context.currentBuilderMsg),
+						A2(author$project$Update$mapColumnMsg, author$project$Builder$AddRow, context.currentBuilderMsg),
 						column));
+			default:
+				return _Utils_Tuple2(context, column);
 		}
 	});
 var author$project$Update$update = F2(
 	function (msg, _n0) {
 		var context = _n0.a;
 		var column = _n0.b;
-		if (msg.$ === 'BuilderMsg') {
-			var columnMsg = msg.a;
-			return A2(
-				elm$core$Tuple$pair,
-				_Utils_Tuple2(
-					A2(
-						author$project$Update$evalColumnMsg,
-						columnMsg,
-						_Utils_update(
-							context,
-							{currentBuilderMsg: columnMsg})),
-					A2(author$project$Update$updateColumn, columnMsg, column)),
-				elm$core$Platform$Cmd$none);
-		} else {
-			var contextMsg = msg.a;
-			return A2(
-				elm$core$Tuple$pair,
-				A3(author$project$Update$updateContext, contextMsg, context, column),
-				elm$core$Platform$Cmd$none);
+		switch (msg.$) {
+			case 'BuilderMsg':
+				var columnMsg = msg.a;
+				return A2(
+					elm$core$Tuple$pair,
+					_Utils_Tuple2(
+						A2(
+							author$project$Update$evalColumnMsg,
+							columnMsg,
+							_Utils_update(
+								context,
+								{currentBuilderMsg: columnMsg})),
+						A2(author$project$Update$updateColumn, columnMsg, column)),
+					elm$core$Platform$Cmd$none);
+			case 'ContextMsg':
+				var contextMsg = msg.a;
+				if (contextMsg.$ === 'OpenFileManager') {
+					var i = contextMsg.a;
+					return A2(
+						elm$core$Tuple$pair,
+						_Utils_Tuple2(
+							_Utils_update(
+								context,
+								{currentFieldIndex: i}),
+							column),
+						author$project$Port$openFileManager(_Utils_Tuple0));
+				} else {
+					return A2(
+						elm$core$Tuple$pair,
+						A3(author$project$Update$updateContext, contextMsg, context, column),
+						elm$core$Platform$Cmd$none);
+				}
+			default:
+				return A2(
+					elm$core$Tuple$pair,
+					_Utils_Tuple2(context, column),
+					elm$core$Platform$Cmd$none);
 		}
 	});
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
@@ -6149,7 +6251,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	}
 };
 var elm$html$Html$div = _VirtualDom_node('div');
-var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$h2 = _VirtualDom_node('h2');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -6180,7 +6282,7 @@ var author$project$Dialogs$modal = F3(
 					_List_fromArray(
 						[
 							A2(
-							elm$html$Html$h1,
+							elm$html$Html$h2,
 							_List_Nil,
 							_List_fromArray(
 								[
@@ -6212,10 +6314,46 @@ var author$project$Dialogs$modal = F3(
 						]))
 				]));
 	});
+var elm$core$String$length = _String_length;
+var elm$core$String$slice = _String_slice;
+var elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			elm$core$String$slice,
+			n,
+			elm$core$String$length(string),
+			string);
+	});
+var elm$core$String$left = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
+	});
+var elm$core$String$toUpper = _String_toUpper;
+var author$project$Util$capitalize = function (str) {
+	return _Utils_ap(
+		elm$core$String$toUpper(
+			A2(elm$core$String$left, 1, str)),
+		A2(elm$core$String$dropLeft, 1, str));
+};
+var elm$html$Html$strong = _VirtualDom_node('strong');
+var author$project$Field$View$fieldHead = function (name) {
+	return A2(
+		elm$html$Html$strong,
+		_List_Nil,
+		_List_fromArray(
+			[
+				elm$html$Html$text(
+				author$project$Util$capitalize(name))
+			]));
+};
 var elm$html$Html$button = _VirtualDom_node('button');
-var elm$html$Html$i = _VirtualDom_node('i');
-var elm$html$Html$Attributes$title = elm$html$Html$Attributes$stringProperty('title');
-var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
+var elm$html$Html$img = _VirtualDom_node('img');
+var elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -6233,46 +6371,13 @@ var elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Field$View$icon = F3(
-	function (text_, title_, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$type_('button'),
-					elm$html$Html$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(title_),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$html$Html$i,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('material-icons')
-						]),
-					_List_fromArray(
-						[
-							elm$html$Html$text(text_)
-						]))
-				]));
-	});
-var author$project$Model$HideSelectBlockDialog = {$: 'HideSelectBlockDialog'};
-var elm$html$Html$img = _VirtualDom_node('img');
-var elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
 var author$project$Field$View$renderSingleThumb = F3(
 	function (thumbnailsUrl, fieldIndex, image) {
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('thumb')
+					elm$html$Html$Attributes$class('sb-thumb')
 				]),
 			_List_fromArray(
 				[
@@ -6284,30 +6389,44 @@ var author$project$Field$View$renderSingleThumb = F3(
 							_Utils_ap(thumbnailsUrl, image))
 						]),
 					_List_Nil),
-					A3(author$project$Field$View$icon, 'clear', '', author$project$Model$HideSelectBlockDialog)
+					A2(
+					elm$html$Html$button,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('sb-clear'),
+							elm$html$Html$Events$onClick(
+							A2(
+								author$project$Model$FieldInput,
+								fieldIndex,
+								author$project$Field$Model$ImageValue('')))
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('×')
+						]))
 				]));
 	});
+var author$project$Model$OpenFileManager = function (a) {
+	return {$: 'OpenFileManager', a: a};
+};
 var elm$core$Basics$neq = _Utils_notEqual;
-var elm$html$Html$strong = _VirtualDom_node('strong');
+var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var author$project$Field$View$renderImageField = F4(
 	function (thumbnailsUrl, index, name, image) {
 		return A2(
 			elm$html$Html$div,
-			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					elm$html$Html$strong,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(name)
-						])),
+					elm$html$Html$Attributes$class('sb-field')
+				]),
+			_List_fromArray(
+				[
+					author$project$Field$View$fieldHead(name),
 					A2(
 					elm$html$Html$div,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('images-field')
+							elm$html$Html$Attributes$class('sb-images-field')
 						]),
 					_List_fromArray(
 						[
@@ -6315,7 +6434,7 @@ var author$project$Field$View$renderImageField = F4(
 							elm$html$Html$div,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$class('hidden')
+									elm$html$Html$Attributes$class('sb-hidden')
 								]),
 							_List_Nil),
 							A2(
@@ -6323,21 +6442,13 @@ var author$project$Field$View$renderImageField = F4(
 							_List_fromArray(
 								[
 									elm$html$Html$Attributes$type_('button'),
-									elm$html$Html$Attributes$class('thumb add'),
-									elm$html$Html$Events$onClick(author$project$Model$HideSelectBlockDialog)
+									elm$html$Html$Attributes$class('sb-thumb sb-add'),
+									elm$html$Html$Events$onClick(
+									author$project$Model$OpenFileManager(index))
 								]),
 							_List_fromArray(
 								[
-									A2(
-									elm$html$Html$i,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$class('material-icons')
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('add')
-										]))
+									elm$html$Html$text('+')
 								]))
 						]))
 				]));
@@ -6348,7 +6459,7 @@ var author$project$Field$View$renderThumb = F5(
 			elm$html$Html$div,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('thumb')
+					elm$html$Html$Attributes$class('sb-thumb')
 				]),
 			_List_fromArray(
 				[
@@ -6360,28 +6471,40 @@ var author$project$Field$View$renderThumb = F5(
 							_Utils_ap(thumbnailsUrl, image))
 						]),
 					_List_Nil),
-					A3(author$project$Field$View$icon, 'clear', '', author$project$Model$HideSelectBlockDialog)
+					A2(
+					elm$html$Html$button,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('sb-clear'),
+							elm$html$Html$Events$onClick(
+							A2(
+								author$project$Model$FieldInput,
+								fieldIndex,
+								author$project$Field$Model$ImagesValue(
+									A2(author$project$Util$remove, thumbIndex, images))))
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('×')
+						]))
 				]));
 	});
 var author$project$Field$View$renderImagesField = F4(
 	function (thumbnailsUrl, index, name, images) {
 		return A2(
 			elm$html$Html$div,
-			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					elm$html$Html$strong,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(name)
-						])),
+					elm$html$Html$Attributes$class('sb-field')
+				]),
+			_List_fromArray(
+				[
+					author$project$Field$View$fieldHead(name),
 					A2(
 					elm$html$Html$div,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('images-field')
+							elm$html$Html$Attributes$class('sb-images-field')
 						]),
 					_Utils_ap(
 						A2(
@@ -6395,21 +6518,13 @@ var author$project$Field$View$renderImagesField = F4(
 								_List_fromArray(
 									[
 										elm$html$Html$Attributes$type_('button'),
-										elm$html$Html$Attributes$class('thumb add'),
-										elm$html$Html$Events$onClick(author$project$Model$HideSelectBlockDialog)
+										elm$html$Html$Attributes$class('sb-thumb sb-add'),
+										elm$html$Html$Events$onClick(
+										author$project$Model$OpenFileManager(index))
 									]),
 								_List_fromArray(
 									[
-										A2(
-										elm$html$Html$i,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('material-icons')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text('add')
-											]))
+										elm$html$Html$text('+')
 									]))
 							])))
 				]));
@@ -6441,16 +6556,13 @@ var author$project$Field$View$renderRichTextField = F3(
 	function (index, name, text_) {
 		return A2(
 			elm$html$Html$div,
-			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					elm$html$Html$strong,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(name)
-						])),
+					elm$html$Html$Attributes$class('sb-field')
+				]),
+			_List_fromArray(
+				[
+					author$project$Field$View$fieldHead(name),
 					A2(
 					elm$html$Html$div,
 					_List_fromArray(
@@ -6519,21 +6631,17 @@ var author$project$Field$View$renderTextAreaField = F3(
 	function (index, name, text_) {
 		return A2(
 			elm$html$Html$label,
-			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					elm$html$Html$strong,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(name)
-						])),
+					elm$html$Html$Attributes$class('sb-field')
+				]),
+			_List_fromArray(
+				[
+					author$project$Field$View$fieldHead(name),
 					A2(
 					elm$html$Html$textarea,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('sb-textarea'),
 							elm$html$Html$Events$onInput(
 							A2(
 								elm$core$Basics$composeL,
@@ -6552,16 +6660,13 @@ var author$project$Field$View$renderTextField = F3(
 	function (index, name, text_) {
 		return A2(
 			elm$html$Html$label,
-			_List_Nil,
 			_List_fromArray(
 				[
-					A2(
-					elm$html$Html$strong,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text(name)
-						])),
+					elm$html$Html$Attributes$class('sb-field')
+				]),
+			_List_fromArray(
+				[
+					author$project$Field$View$fieldHead(name),
 					A2(
 					elm$html$Html$input,
 					_List_fromArray(
@@ -6612,7 +6717,7 @@ var author$project$Dialogs$renderCurrentBlock = F3(
 	function (thumbnailsUrl, id, fields) {
 		return A3(
 			author$project$Dialogs$modal,
-			id,
+			author$project$Util$capitalize(id),
 			A2(
 				elm$core$List$indexedMap,
 				author$project$Field$View$renderField(thumbnailsUrl),
@@ -6630,7 +6735,7 @@ var author$project$Dialogs$renderCurrentBlock = F3(
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text('Cancelar')
+							elm$html$Html$text('Cancel')
 						])),
 					A2(
 					elm$html$Html$button,
@@ -6643,20 +6748,17 @@ var author$project$Dialogs$renderCurrentBlock = F3(
 						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text('Aceptar')
+							elm$html$Html$text('Ok')
 						]))
 				]));
 	});
-var author$project$Dialogs$editBlockDialog = function (context) {
-	var _n0 = context.currentBlock;
-	if (_n0.$ === 'Block') {
-		var name = _n0.a.name;
-		var fields = _n0.a.fields;
-		return A3(author$project$Dialogs$renderCurrentBlock, '', name, fields);
-	} else {
-		return A2(elm$html$Html$div, _List_Nil, _List_Nil);
-	}
-};
+var author$project$Dialogs$editBlockDialog = F2(
+	function (form, thumbnailsUrl) {
+		var _n0 = form;
+		var name = _n0.a;
+		var fields = _n0.b;
+		return A3(author$project$Dialogs$renderCurrentBlock, thumbnailsUrl, name, fields);
+	});
 var author$project$Model$NewBlock = function (a) {
 	return {$: 'NewBlock', a: a};
 };
@@ -6675,23 +6777,24 @@ var author$project$Dialogs$renderBlock = function (blockSchemaKey) {
 				elm$html$Html$text(blockSchemaKey)
 			]));
 };
-var author$project$Model$AddRow = {$: 'AddRow'};
+var author$project$Model$RowBlock = {$: 'RowBlock'};
 var author$project$Dialogs$rowBlock = A2(
 	elm$html$Html$div,
 	_List_fromArray(
 		[
 			elm$html$Html$Attributes$class('sb-schema'),
 			elm$html$Html$Events$onClick(
-			author$project$Model$ContextMsg(author$project$Model$AddRow))
+			author$project$Model$ContextMsg(author$project$Model$RowBlock))
 		]),
 	_List_fromArray(
 		[
 			elm$html$Html$text('Row')
 		]));
+var author$project$Model$HideSelectBlockDialog = {$: 'HideSelectBlockDialog'};
 var author$project$Dialogs$selectBlockDialog = function (schema) {
 	return A3(
 		author$project$Dialogs$modal,
-		'Seleccionar widget',
+		'Choose block',
 		_List_fromArray(
 			[
 				A2(
@@ -6721,13 +6824,178 @@ var author$project$Dialogs$selectBlockDialog = function (schema) {
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text('Cancelar')
+						elm$html$Html$text('Cancel')
 					]))
 			]));
 };
+var author$project$Field$Util$getAt = F4(
+	function (_default, _function, index, fields) {
+		return A2(
+			elm$core$Maybe$withDefault,
+			_default,
+			A2(
+				elm$core$Maybe$andThen,
+				_function,
+				A2(author$project$Util$get, index, fields)));
+	});
+var author$project$Field$Util$valueToString = function (_n0) {
+	var fieldvalue = _n0.b;
+	switch (fieldvalue.$) {
+		case 'TextValue':
+			var value = fieldvalue.a;
+			return elm$core$Maybe$Just(value);
+		case 'TextAreaValue':
+			var value = fieldvalue.a;
+			return elm$core$Maybe$Just(value);
+		case 'RichTextValue':
+			var value = fieldvalue.a;
+			return elm$core$Maybe$Just(value);
+		case 'ImageValue':
+			var value = fieldvalue.a;
+			return elm$core$Maybe$Just(value);
+		default:
+			var value = fieldvalue.a;
+			return elm$core$Maybe$Just(
+				A2(elm$core$String$join, ', ', value));
+	}
+};
+var author$project$Field$Util$getStringAt = F2(
+	function (index, fields) {
+		return A4(author$project$Field$Util$getAt, '', author$project$Field$Util$valueToString, index, fields);
+	});
+var elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var author$project$Json$encodeValue = function (value) {
+	switch (value.$) {
+		case 'TextValue':
+			var str = value.a;
+			return elm$json$Json$Encode$string(str);
+		case 'TextAreaValue':
+			var str = value.a;
+			return elm$json$Json$Encode$string(str);
+		case 'RichTextValue':
+			var str = value.a;
+			return elm$json$Json$Encode$string(str);
+		case 'ImageValue':
+			var str = value.a;
+			return elm$json$Json$Encode$string(str);
+		default:
+			var strs = value.a;
+			return A2(elm$json$Json$Encode$list, elm$json$Json$Encode$string, strs);
+	}
+};
+var author$project$Json$encodeField = F2(
+	function (_n0, _n1) {
+		var schema = _n0.a;
+		var type_ = _n1.a;
+		var value = _n1.b;
+		return _Utils_Tuple2(
+			schema.id,
+			author$project$Json$encodeValue(value));
+	});
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var author$project$Json$encodeColumn = F2(
+	function (schema, _n3) {
+		var form = _n3.a.form;
+		var rows = _n3.a.rows;
+		var _n4 = form;
+		var fields = _n4.b;
+		return elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'id',
+					elm$json$Json$Encode$string(
+						A2(author$project$Field$Util$getStringAt, 0, fields))),
+					_Utils_Tuple2(
+					'class',
+					elm$json$Json$Encode$string(
+						A2(author$project$Field$Util$getStringAt, 1, fields))),
+					_Utils_Tuple2(
+					'rows',
+					A2(
+						elm$json$Json$Encode$list,
+						author$project$Json$encodeRow(schema),
+						rows))
+				]));
+	});
+var author$project$Json$encodeRow = F2(
+	function (schema, _n0) {
+		var isBlock = _n0.a.isBlock;
+		var form = _n0.a.form;
+		var columns = _n0.a.columns;
+		var _n1 = form;
+		var name = _n1.a;
+		var fields = _n1.b;
+		if (isBlock) {
+			var _n2 = A2(elm$core$Dict$get, name, schema);
+			if (_n2.$ === 'Just') {
+				var fieldSchemas = _n2.a;
+				return elm$json$Json$Encode$object(
+					A2(
+						elm$core$List$cons,
+						_Utils_Tuple2(
+							'type',
+							elm$json$Json$Encode$string(name)),
+						A3(elm$core$List$map2, author$project$Json$encodeField, fieldSchemas, fields)));
+			} else {
+				return elm$json$Json$Encode$null;
+			}
+		} else {
+			return elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'type',
+						elm$json$Json$Encode$string('Row')),
+						_Utils_Tuple2(
+						'id',
+						elm$json$Json$Encode$string(
+							A2(author$project$Field$Util$getStringAt, 0, fields))),
+						_Utils_Tuple2(
+						'class',
+						elm$json$Json$Encode$string(
+							A2(author$project$Field$Util$getStringAt, 1, fields))),
+						_Utils_Tuple2(
+						'columns',
+						A2(
+							elm$json$Json$Encode$list,
+							author$project$Json$encodeColumn(schema),
+							columns))
+					]));
+		}
+	});
+var author$project$Json$encode = F2(
+	function (schema, _n0) {
+		var rows = _n0.a.rows;
+		return A2(
+			elm$json$Json$Encode$list,
+			author$project$Json$encodeRow(schema),
+			rows);
+	});
 var author$project$Model$BuilderMsg = function (a) {
 	return {$: 'BuilderMsg', a: a};
 };
+var elm$html$Html$Attributes$title = elm$html$Html$Attributes$stringProperty('title');
 var author$project$View$addRow = A2(
 	elm$html$Html$div,
 	_List_fromArray(
@@ -6742,11 +7010,7 @@ var author$project$View$addRow = A2(
 				[
 					elm$html$Html$Events$onClick(
 					author$project$Builder$AddBlock(
-						author$project$Builder$newRow(
-							_List_fromArray(
-								[
-									author$project$Builder$newColumn(_List_Nil)
-								])))),
+						A2(author$project$Builder$Form, 'Row', _List_Nil))),
 					elm$html$Html$Attributes$title('Add row')
 				]),
 			_List_fromArray(
@@ -6769,227 +7033,156 @@ var elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
 var elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
 var elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
 var elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var author$project$Icons$add = F2(
-	function (titleText, msg) {
+var author$project$Icons$addColumn = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-columns fa-w-16'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'columns'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 512 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64V160h160v256zm224 0H288V160h160v256z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$copy = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-clone fa-w-16'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'clone'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'far'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 512 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$delete = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-trash-alt fa-w-14'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'trash-alt'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm416 56v324c0 26.5-21.5 48-48 48H80c-26.5 0-48-21.5-48-48V140c0-6.6 5.4-12 12-12h360c6.6 0 12 5.4 12 12zm-272 68c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208zm96 0c0-8.8-7.2-16-16-16s-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$down = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-down fa-w-14'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-down'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$edit = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-edit fa-w-18'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'edit'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 576 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$up = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-up fa-w-14'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-up'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$View$buttonIcon = F3(
+	function (icon, titleText, msg) {
 		return A2(
 			elm$html$Html$button,
 			_List_fromArray(
 				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
+					elm$html$Html$Attributes$class('sb-icon'),
 					elm$html$Html$Attributes$title(titleText),
 					elm$html$Html$Events$onClick(msg)
 				]),
 			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-plus fa-w-14'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'plus'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var author$project$Icons$copy = F2(
-	function (titleText, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(titleText),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-copy fa-w-14'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'copy'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var author$project$Icons$delete = F2(
-	function (titleText, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(titleText),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-trash fa-w-14'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'trash'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M0 84V56c0-13.3 10.7-24 24-24h112l9.4-18.7c4-8.2 12.3-13.3 21.4-13.3h114.3c9.1 0 17.4 5.1 21.5 13.3L312 32h112c13.3 0 24 10.7 24 24v28c0 6.6-5.4 12-12 12H12C5.4 96 0 90.6 0 84zm415.2 56.7L394.8 467c-1.6 25.3-22.6 45-47.9 45H101.1c-25.3 0-46.3-19.7-47.9-45L32.8 140.7c-.4-6.9 5.1-12.7 12-12.7h358.5c6.8 0 12.3 5.8 11.9 12.7z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var author$project$Icons$down = F2(
-	function (titleText, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(titleText),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-down fa-w-14'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-down'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var author$project$Icons$edit = F2(
-	function (titleText, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(titleText),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-edit fa-w-18'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'edit'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 576 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
-	});
-var author$project$Icons$up = F2(
-	function (titleText, msg) {
-		return A2(
-			elm$html$Html$button,
-			_List_fromArray(
-				[
-					elm$svg$Svg$Attributes$class('sb-icon'),
-					elm$html$Html$Attributes$title(titleText),
-					elm$html$Html$Events$onClick(msg)
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$svg$Svg$svg,
-					_List_fromArray(
-						[
-							A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
-							elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-up fa-w-14'),
-							A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-up'),
-							A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
-							A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
-							elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
-							A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$svg$Svg$path,
-							_List_fromArray(
-								[
-									elm$svg$Svg$Attributes$d('M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z'),
-									elm$svg$Svg$Attributes$fill('currentColor')
-								]),
-							_List_Nil)
-						]))
-				]));
+				[icon]));
 	});
 var author$project$Builder$DragEnd = {$: 'DragEnd'};
 var author$project$Builder$DragStart = function (a) {
@@ -6998,7 +7191,6 @@ var author$project$Builder$DragStart = function (a) {
 var author$project$Builder$Drop = function (a) {
 	return {$: 'Drop', a: a};
 };
-var author$project$Builder$NoRowMsg = {$: 'NoRowMsg'};
 var author$project$Events$options = F2(
 	function (stopPropagation, preventDefault) {
 		return elm$json$Json$Decode$map(
@@ -7056,49 +7248,83 @@ var author$project$Events$onDrop = function (message) {
 			false,
 			elm$json$Json$Decode$succeed(message)));
 };
-var author$project$Field$View$getAt = F4(
-	function (_default, _function, index, fields) {
-		return A2(
-			elm$core$Maybe$withDefault,
-			_default,
-			A2(
-				elm$core$Maybe$andThen,
-				_function,
-				A2(author$project$Util$get, index, fields)));
-	});
-var author$project$Field$View$valueToString = function (_n0) {
-	var fieldvalue = _n0.b;
-	switch (fieldvalue.$) {
-		case 'TextValue':
-			var value = fieldvalue.a;
-			return elm$core$Maybe$Just(value);
-		case 'TextAreaValue':
-			var value = fieldvalue.a;
-			return elm$core$Maybe$Just(value);
-		case 'RichTextValue':
-			var value = fieldvalue.a;
-			return elm$core$Maybe$Just(value);
-		case 'ImageValue':
-			var value = fieldvalue.a;
-			return elm$core$Maybe$Just(value);
-		default:
-			return elm$core$Maybe$Nothing;
-	}
-};
-var author$project$Field$View$getStringAt = F2(
-	function (index, fields) {
-		return A4(author$project$Field$View$getAt, '', author$project$Field$View$valueToString, index, fields);
-	});
 var author$project$Builder$DeleteColumn = {$: 'DeleteColumn'};
 var author$project$Builder$EditColumn = function (a) {
 	return {$: 'EditColumn', a: a};
 };
-var author$project$Builder$columnProps = function (fields) {
-	return author$project$Builder$Block(
-		{dragged: false, fields: fields, name: 'ColumnProps'});
-};
+var author$project$Builder$GoLeft = {$: 'GoLeft'};
+var author$project$Builder$GoRight = {$: 'GoRight'};
+var author$project$Icons$addBlock = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-plus-square fa-w-14'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'plus-square'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 448 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$left = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-left fa-w-10'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-left'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 320 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
+var author$project$Icons$right = A2(
+	elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			A2(elm$html$Html$Attributes$attribute, 'aria-hidden', 'true'),
+			elm$svg$Svg$Attributes$class('svg-inline--fa fa-chevron-right fa-w-10'),
+			A2(elm$html$Html$Attributes$attribute, 'data-icon', 'chevron-right'),
+			A2(elm$html$Html$Attributes$attribute, 'data-prefix', 'fas'),
+			A2(elm$html$Html$Attributes$attribute, 'role', 'img'),
+			elm$svg$Svg$Attributes$viewBox('0 0 320 512'),
+			A2(elm$html$Html$Attributes$attribute, 'xmlns', 'http://www.w3.org/2000/svg')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			elm$svg$Svg$path,
+			_List_fromArray(
+				[
+					elm$svg$Svg$Attributes$d('M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z'),
+					elm$svg$Svg$Attributes$fill('currentColor')
+				]),
+			_List_Nil)
+		]));
 var author$project$View$columnControl = function (_n0) {
-	var props = _n0.a.props;
+	var form = _n0.a.form;
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
@@ -7107,19 +7333,59 @@ var author$project$View$columnControl = function (_n0) {
 			]),
 		_List_fromArray(
 			[
-				A2(author$project$Icons$add, 'Add block', author$project$Builder$SelectBlock),
-				A2(
+				A3(author$project$View$buttonIcon, author$project$Icons$addBlock, 'Add block', author$project$Builder$SelectBlock),
+				A3(
+				author$project$View$buttonIcon,
 				author$project$Icons$edit,
 				'Edit column',
-				author$project$Builder$EditColumn(
-					author$project$Builder$columnProps(props))),
-				A2(author$project$Icons$delete, 'Delete column', author$project$Builder$DeleteColumn)
+				author$project$Builder$EditColumn(form)),
+				A3(author$project$View$buttonIcon, author$project$Icons$left, 'Move left', author$project$Builder$GoLeft),
+				A3(author$project$View$buttonIcon, author$project$Icons$right, 'Move right', author$project$Builder$GoRight),
+				A3(author$project$View$buttonIcon, author$project$Icons$delete, 'Delete column', author$project$Builder$DeleteColumn)
+			]));
+};
+var author$project$View$rowControl = function (_n0) {
+	var isBlock = _n0.a.isBlock;
+	var form = _n0.a.form;
+	return A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('sb-block-head')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$strong,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('sb-block-name')
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						function () {
+							var _n1 = form;
+							var name = _n1.a;
+							return name;
+						}())
+					])),
+				isBlock ? A2(elm$html$Html$div, _List_Nil, _List_Nil) : A3(author$project$View$buttonIcon, author$project$Icons$addColumn, 'Add column', author$project$Builder$AddColumn),
+				A3(
+				author$project$View$buttonIcon,
+				author$project$Icons$edit,
+				'Edit block',
+				author$project$Builder$Edit(form)),
+				A3(author$project$View$buttonIcon, author$project$Icons$copy, 'Duplicate', author$project$Builder$Duplicate),
+				A3(author$project$View$buttonIcon, author$project$Icons$up, 'Move up', author$project$Builder$GoUp),
+				A3(author$project$View$buttonIcon, author$project$Icons$down, 'Move down', author$project$Builder$GoDown),
+				A3(author$project$View$buttonIcon, author$project$Icons$delete, 'Delete block', author$project$Builder$Delete)
 			]));
 };
 var elm$html$Html$Attributes$draggable = _VirtualDom_attribute('draggable');
 var author$project$View$renderColumn = F4(
 	function (context, basis, i, column) {
-		var props = column.a.props;
+		var form = column.a.form;
 		var rows = column.a.rows;
 		return A2(
 			elm$html$Html$map,
@@ -7142,192 +7408,118 @@ var author$project$View$renderColumn = F4(
 	});
 var author$project$View$renderRow = F3(
 	function (context, i, row) {
+		var isBlock = row.a.isBlock;
+		var form = row.a.form;
+		var dragged = row.a.dragged;
+		var columns = row.a.columns;
 		return A2(
 			elm$html$Html$map,
 			author$project$Builder$RowMsg(i),
-			function () {
-				if (row.$ === 'Block') {
-					var name = row.a.name;
-					var fields = row.a.fields;
-					var dragged = row.a.dragged;
-					return A2(
+			A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('sb-block'),
+						elm$html$Html$Attributes$class(
+						dragged ? 'sb-dragged' : ''),
+						elm$html$Html$Attributes$draggable('true'),
+						author$project$Events$onDragStart(
+						author$project$Builder$DragStart(row)),
+						author$project$Events$onDragEnd(author$project$Builder$DragEnd),
+						author$project$Events$onDragOver(author$project$Builder$NoRowMsg),
+						author$project$Events$onDrop(
+						author$project$Builder$Drop(context.currentRow))
+					]),
+				_List_fromArray(
+					[
+						author$project$View$rowControl(row),
+						isBlock ? A2(
+						elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								function () {
+								var _n0 = form;
+								var name = _n0.a;
+								var fields = _n0.b;
+								if (name === 'Text') {
+									return A3(
+										elm_explorations$markdown$Markdown$toHtmlWith,
+										_Utils_update(
+											elm_explorations$markdown$Markdown$defaultOptions,
+											{sanitize: false}),
+										_List_Nil,
+										A2(author$project$Field$Util$getStringAt, 0, fields));
+								} else {
+									return elm$html$Html$text(
+										A2(author$project$Field$Util$getStringAt, 0, fields));
+								}
+							}()
+							])) : A2(
 						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('sb-block'),
-								elm$html$Html$Attributes$class(
-								dragged ? 'sb-dragged' : ''),
-								elm$html$Html$Attributes$draggable('true'),
-								author$project$Events$onDragStart(
-								author$project$Builder$DragStart(row)),
-								author$project$Events$onDragEnd(author$project$Builder$DragEnd),
-								author$project$Events$onDragOver(author$project$Builder$NoRowMsg),
-								author$project$Events$onDrop(
-								author$project$Builder$Drop(context.currentBlock))
+								elm$html$Html$Attributes$class('sb-columns')
 							]),
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('sb-block-head')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$strong,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('sb-block-name')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text(name)
-											])),
-										A2(
-										author$project$Icons$edit,
-										'Edit block',
-										author$project$Builder$Edit(row)),
-										A2(author$project$Icons$copy, 'Duplicate', author$project$Builder$Duplicate),
-										A2(author$project$Icons$up, 'Move up', author$project$Builder$GoUp),
-										A2(author$project$Icons$down, 'Move down', author$project$Builder$GoDown),
-										A2(author$project$Icons$delete, 'Delete block', author$project$Builder$Delete)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_Nil,
-								_List_fromArray(
-									[
-										elm$html$Html$text(
-										A2(author$project$Field$View$getStringAt, 0, fields))
-									]))
-							]));
-				} else {
-					var columns = row.a.columns;
-					return A2(
-						elm$html$Html$div,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('sb-block'),
-								elm$html$Html$Attributes$draggable('true'),
-								author$project$Events$onDragStart(
-								author$project$Builder$DragStart(row)),
-								author$project$Events$onDragEnd(author$project$Builder$DragEnd),
-								author$project$Events$onDragOver(author$project$Builder$NoRowMsg),
-								author$project$Events$onDrop(
-								author$project$Builder$Drop(context.currentBlock))
-							]),
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('sb-block-head')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$strong,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('sb-block-name')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text('')
-											])),
-										A2(author$project$Icons$add, 'Add column', author$project$Builder$AddColumn),
-										A2(
-										author$project$Icons$edit,
-										'Edit block',
-										author$project$Builder$Edit(row)),
-										A2(author$project$Icons$copy, 'Duplicate', author$project$Builder$Duplicate),
-										A2(author$project$Icons$up, 'Move up', author$project$Builder$GoUp),
-										A2(author$project$Icons$down, 'Move down', author$project$Builder$GoDown),
-										A2(author$project$Icons$delete, 'Delete block', author$project$Builder$Delete)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('sb-columns')
-									]),
-								A2(
-									elm$core$List$indexedMap,
-									A2(
-										author$project$View$renderColumn,
-										context,
-										(12 / elm$core$List$length(columns)) | 0),
-									columns))
-							]));
-				}
-			}());
+						A2(
+							elm$core$List$indexedMap,
+							A2(
+								author$project$View$renderColumn,
+								context,
+								(12 / elm$core$List$length(columns)) | 0),
+							columns))
+					])));
 	});
 var author$project$View$renderTopRow = F3(
-	function (context, i, row) {
+	function (context, i, _n0) {
+		var form = _n0.a.form;
+		var columns = _n0.a.columns;
 		return A2(
 			elm$html$Html$map,
 			author$project$Builder$RowMsg(i),
-			function () {
-				if (row.$ === 'Row') {
-					var columns = row.a.columns;
-					return A2(
+			A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('sb-top-block')
+					]),
+				_List_fromArray(
+					[
+						A2(
 						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('sb-top-block')
+								elm$html$Html$Attributes$class('sb-block-head')
 							]),
 						_List_fromArray(
 							[
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('sb-block-head')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										elm$html$Html$strong,
-										_List_fromArray(
-											[
-												elm$html$Html$Attributes$class('sb-block-name')
-											]),
-										_List_fromArray(
-											[
-												elm$html$Html$text('')
-											])),
-										A2(author$project$Icons$add, 'Add column', author$project$Builder$AddColumn),
-										A2(
-										author$project$Icons$edit,
-										'Edit block',
-										author$project$Builder$Edit(row)),
-										A2(author$project$Icons$copy, 'Duplicate', author$project$Builder$Duplicate),
-										A2(author$project$Icons$up, 'Move up', author$project$Builder$GoUp),
-										A2(author$project$Icons$down, 'Move down', author$project$Builder$GoDown),
-										A2(author$project$Icons$delete, 'Delete block', author$project$Builder$Delete)
-									])),
-								A2(
-								elm$html$Html$div,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$class('sb-columns')
-									]),
-								A2(
-									elm$core$List$indexedMap,
-									A2(
-										author$project$View$renderColumn,
-										context,
-										(12 / elm$core$List$length(columns)) | 0),
-									columns))
-							]));
-				} else {
-					return A2(elm$html$Html$div, _List_Nil, _List_Nil);
-				}
-			}());
+								A3(author$project$View$buttonIcon, author$project$Icons$addColumn, 'Add column', author$project$Builder$AddColumn),
+								A3(
+								author$project$View$buttonIcon,
+								author$project$Icons$edit,
+								'Edit row',
+								author$project$Builder$Edit(form)),
+								A3(author$project$View$buttonIcon, author$project$Icons$copy, 'Duplicate', author$project$Builder$Duplicate),
+								A3(author$project$View$buttonIcon, author$project$Icons$up, 'Move up', author$project$Builder$GoUp),
+								A3(author$project$View$buttonIcon, author$project$Icons$down, 'Move down', author$project$Builder$GoDown),
+								A3(author$project$View$buttonIcon, author$project$Icons$delete, 'Delete row', author$project$Builder$Delete)
+							])),
+						A2(
+						elm$html$Html$div,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('sb-columns')
+							]),
+						A2(
+							elm$core$List$indexedMap,
+							A2(
+								author$project$View$renderColumn,
+								context,
+								(12 / elm$core$List$length(columns)) | 0),
+							columns))
+					])));
 	});
+var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var author$project$View$view = function (_n0) {
 	var context = _n0.a;
 	var column = _n0.b.a;
@@ -7356,7 +7548,23 @@ var author$project$View$view = function (_n0) {
 						_List_fromArray(
 							[author$project$View$addRow])))),
 				context.showSelectBlockDialog ? author$project$Dialogs$selectBlockDialog(context.schema) : A2(elm$html$Html$div, _List_Nil, _List_Nil),
-				context.showEditBlockDialog ? author$project$Dialogs$editBlockDialog(context) : A2(elm$html$Html$div, _List_Nil, _List_Nil)
+				context.showEditBlockDialog ? A2(author$project$Dialogs$editBlockDialog, context.currentForm, context.thumbnailsUrl) : A2(elm$html$Html$div, _List_Nil, _List_Nil),
+				A2(
+				elm$html$Html$input,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$id('sb-value'),
+						elm$html$Html$Attributes$type_('hidden'),
+						elm$html$Html$Attributes$value(
+						A2(
+							elm$json$Json$Encode$encode,
+							4,
+							A2(
+								author$project$Json$encode,
+								context.schema,
+								author$project$Builder$Column(column))))
+					]),
+				_List_Nil)
 			]));
 };
 var elm$browser$Browser$External = function (a) {
@@ -7456,16 +7664,6 @@ var elm$core$Task$perform = F2(
 			elm$core$Task$Perform(
 				A2(elm$core$Task$map, toMessage, task)));
 	});
-var elm$core$String$length = _String_length;
-var elm$core$String$slice = _String_slice;
-var elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			elm$core$String$slice,
-			n,
-			elm$core$String$length(string),
-			string);
-	});
 var elm$core$String$startsWith = _String_startsWith;
 var elm$url$Url$Http = {$: 'Http'};
 var elm$url$Url$Https = {$: 'Https'};
@@ -7473,10 +7671,6 @@ var elm$core$String$indexes = _String_indexes;
 var elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
-var elm$core$String$left = F2(
-	function (n, string) {
-		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
-	});
 var elm$core$String$contains = _String_contains;
 var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
@@ -7586,42 +7780,102 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$element = _Browser_element;
-var elm$core$Basics$always = F2(
-	function (a, _n0) {
-		return a;
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
 	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var author$project$SiteBuilder$main = elm$browser$Browser$element(
 	{
 		init: author$project$Model$init,
-		subscriptions: elm$core$Basics$always(
-			elm$core$Platform$Sub$batch(
+		subscriptions: function (_n0) {
+			var currentForm = _n0.a.currentForm;
+			var currentFieldIndex = _n0.a.currentFieldIndex;
+			var _n1 = currentForm;
+			var fields = _n1.b;
+			return elm$core$Platform$Sub$batch(
 				_List_fromArray(
 					[
 						author$project$Port$richTextInput(
-						function (_n0) {
-							var fieldIndex = _n0.a;
-							var value = _n0.b;
+						function (_n2) {
+							var fieldIndex = _n2.a;
+							var value = _n2.b;
 							return author$project$Model$ContextMsg(
 								A2(
 									author$project$Model$FieldInput,
 									fieldIndex,
 									author$project$Field$Model$RichTextValue(value)));
+						}),
+						author$project$Port$fileManager(
+						function (images) {
+							if (elm$core$List$length(images) > 0) {
+								var _n3 = A2(
+									elm$core$Maybe$map,
+									function (_n4) {
+										var value = _n4.b;
+										return value;
+									},
+									A2(author$project$Util$get, currentFieldIndex, fields));
+								_n3$2:
+								while (true) {
+									if (_n3.$ === 'Just') {
+										switch (_n3.a.$) {
+											case 'ImageValue':
+												return author$project$Model$ContextMsg(
+													A2(
+														author$project$Model$FieldInput,
+														currentFieldIndex,
+														author$project$Field$Model$ImageValue(
+															A2(
+																elm$core$Maybe$withDefault,
+																'',
+																elm$core$List$head(images)))));
+											case 'ImagesValue':
+												var value = _n3.a.a;
+												return author$project$Model$ContextMsg(
+													A2(
+														author$project$Model$FieldInput,
+														currentFieldIndex,
+														author$project$Field$Model$ImagesValue(
+															_Utils_ap(value, images))));
+											default:
+												break _n3$2;
+										}
+									} else {
+										break _n3$2;
+									}
+								}
+								return author$project$Model$NoMsg;
+							} else {
+								return author$project$Model$NoMsg;
+							}
 						})
-					]))),
+					]));
+		},
 		update: author$project$Update$update,
 		view: author$project$View$view
 	});
 _Platform_export({'SiteBuilder':{'init':author$project$SiteBuilder$main(
 	A2(
 		elm$json$Json$Decode$andThen,
-		function (schema) {
+		function (thumbnailsUrl) {
 			return A2(
 				elm$json$Json$Decode$andThen,
-				function (data) {
-					return elm$json$Json$Decode$succeed(
-						{data: data, schema: schema});
+				function (schema) {
+					return A2(
+						elm$json$Json$Decode$andThen,
+						function (data) {
+							return elm$json$Json$Decode$succeed(
+								{data: data, schema: schema, thumbnailsUrl: thumbnailsUrl});
+						},
+						A2(elm$json$Json$Decode$field, 'data', elm$json$Json$Decode$string));
 				},
-				A2(elm$json$Json$Decode$field, 'data', elm$json$Json$Decode$string));
+				A2(elm$json$Json$Decode$field, 'schema', elm$json$Json$Decode$value));
 		},
-		A2(elm$json$Json$Decode$field, 'schema', elm$json$Json$Decode$value)))(0)}});}(this));
+		A2(elm$json$Json$Decode$field, 'thumbnailsUrl', elm$json$Json$Decode$string)))(0)}});}(this));

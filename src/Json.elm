@@ -3,6 +3,7 @@ module Json exposing (..)
 import Builder exposing (..)
 import Dict exposing (Dict)
 import Field.Model exposing (..)
+import Field.Util exposing (getStringAt)
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (decodeValue)
 import List exposing (filterMap, map, map2, take)
@@ -15,19 +16,23 @@ encode : Schema -> Column -> Encode.Value
 encode schema (Column { rows }) = Encode.list (encodeRow schema) rows
 
 encodeColumn : Schema -> Column -> Encode.Value
-encodeColumn schema (Column { rows }) = Encode.object
-  [ ("rows", Encode.list (encodeRow schema) rows)
+encodeColumn schema (Column { form, rows }) = let (Form _ fields) = form in Encode.object
+  [ ("id", Encode.string <| getStringAt 0 fields)
+  , ("class", Encode.string <| getStringAt 1 fields)
+  , ("rows", Encode.list (encodeRow schema) rows)
   ]
 
 encodeRow : Schema -> Row -> Encode.Value
-encodeRow schema row = case row of 
-  Block { name, fields } -> case Dict.get name schema of
+encodeRow schema (Row { isBlock, form, columns }) = let (Form name fields) = form in if isBlock
+  then case Dict.get name schema of
     Just fieldSchemas ->
       Encode.object <| ("type", Encode.string name) :: map2 encodeField fieldSchemas fields
     Nothing ->
       Encode.null
-  Row { columns } -> Encode.object
+  else Encode.object
     [ ("type", Encode.string "Row")
+    , ("id", Encode.string <| getStringAt 0 fields)
+    , ("class", Encode.string <| getStringAt 1 fields)
     , ("columns", Encode.list (encodeColumn schema) columns)
     ]
 
@@ -46,12 +51,20 @@ encodeValue value = case value of
 
 decode : Schema -> String -> Column
 decode schema str = case Decode.decodeString (Decode.list <| maybeRowDecoder schema) str of
-  Ok rows -> newColumn rows
-  Err _ -> newColumn []
+  Ok rows -> let (Column c) = newColumn in Column { c | rows = rows }
+  Err _ -> newColumn
 
 columnDecoder : Schema -> Decode.Decoder Column
-columnDecoder schema = Decode.map (\x -> newColumn x)
+columnDecoder schema = Decode.map3 buildColumn
+  (Decode.field "id" Decode.string)
+  (Decode.field "class" Decode.string)
   (Decode.field "rows" <| Decode.list (maybeRowDecoder schema))
+
+buildColumn : String -> String -> List Row -> Column
+buildColumn id class rows = Column
+  { form = Form "Column" [ Field "id" <| TextValue id, Field "class" <| TextValue class ]
+  , rows = rows
+  }
 
 maybeRowDecoder : Schema -> Decode.Decoder Row
 maybeRowDecoder schema = Decode.andThen (rowDecoder schema) <| Decode.field "type" Decode.string
@@ -59,10 +72,22 @@ maybeRowDecoder schema = Decode.andThen (rowDecoder schema) <| Decode.field "typ
 rowDecoder : Schema -> String -> Decode.Decoder Row
 rowDecoder schema name = case Dict.get name schema of
   Just fieldsSchemas ->
-    Decode.map (\dict -> Block { name = name, fields = filterMap (toField dict) fieldsSchemas, dragged = False })
+    Decode.map (\dict -> setForm (Form name <| filterMap (toField dict) fieldsSchemas) <| setIsBlock True newRow)
     <| Decode.dict Decode.value
   Nothing ->
-    Decode.map newRow (Decode.field "columns" <| Decode.list <| columnDecoder schema)
+    Decode.map3 buildRow
+      (Decode.field "id" Decode.string)
+      (Decode.field "class" Decode.string)
+      (Decode.field "columns" <| Decode.list <| columnDecoder schema)
+
+buildRow : String -> String -> List Column -> Row
+buildRow id class columns = Row
+  { isBlock = False
+  , form = Form "Row" [ Field "id" <| TextValue id, Field "class" <| TextValue class ]
+  , columns = columns
+  , dragged = False
+  , isTarget = False
+  }
 
 toField : Dict String Encode.Value -> FieldSchema -> Maybe Field
 toField dict (FieldSchema { id, type_ }) = Dict.get id dict |> Maybe.andThen

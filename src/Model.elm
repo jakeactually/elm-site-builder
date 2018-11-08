@@ -1,56 +1,64 @@
 module Model exposing (..)
 
 import Builder exposing (..)
-import Dict
+import Dict exposing (empty)
 import Json
 import Json.Encode
-import Json.Decode
+import Json.Decode exposing (decodeValue)
 import Field.Model exposing (..)
 import List exposing (map)
-import Result
+import Result exposing (withDefault)
 import Schema exposing (..)
+import Tuple exposing (pair)
 
 type alias Flags =
   { schema : Json.Decode.Value
   , data : String
+  , thumbnailsUrl : String
   }
 
 type alias Model = (Context, Column)
 
 type alias Context =
   { schema : Schema
-  , isNewBlock : Bool
+  , thumbnailsUrl : String
   , showSelectBlockDialog : Bool
   , showEditBlockDialog : Bool
   , currentBuilderMsg : ColumnMsg
-  , currentBlock : Row
-  , dragging : Bool
+  , updater : Result (Form -> ColumnMsg) (Form -> RowMsg)
+  , currentRow : Row
+  , currentForm : Form
+  , currentFieldIndex : Int
   }
 
 init : Flags -> (Model, Cmd Msg)
 init flags = (initModel flags, Cmd.none)
 
 initModel : Flags -> Model
-initModel flags = let schema = Result.withDefault Dict.empty <| Json.Decode.decodeValue decodeSchema flags.schema in
-  ({ schema = schema
-  , isNewBlock = False
+initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSchema flags.schema in pair
+  { schema = decodedSchema
+  , thumbnailsUrl = flags.thumbnailsUrl
   , showSelectBlockDialog = False
   , showEditBlockDialog = False
   , currentBuilderMsg = SelectBlock
-  , currentBlock = newRow []
-  , dragging = False
+  , updater = Ok (always NoRowMsg)
+  , currentRow = newRow
+  , currentForm = Form "" []
+  , currentFieldIndex = 0
   }
-  , Json.decode schema flags.data
-  )
+  <| Json.decode decodedSchema flags.data
 
 type Msg
   = BuilderMsg ColumnMsg
   | ContextMsg ContextMsg
+  | NoMsg
 
 type ContextMsg
   = NewBlock String
   | HideSelectBlockDialog
   | FieldInput Int FieldValue
+  | OpenFileManager Int
   | AcceptBlock
   | HideEditBlockDialog
-  | AddRow
+  | RowBlock
+  | NoContextMsg

@@ -7,6 +7,8 @@
     <title>Document</title>
     <link href="https://cdn.quilljs.com/1.2.4/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.2.4/quill.min.js"></script>
+    <link rel="stylesheet" href="file-manager.css">
+    <script src="file-manager.js"></script>
     <link rel="stylesheet" href="site-builder.css">
     <script src="site-builder.js"></script>
 </head>
@@ -16,43 +18,73 @@
         body {
             margin: 0;
         }
+
+        a.sb-show-value {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 4px;
+            width: 125px;
+            margin: auto;
+            font-family: sans-serif;
+            text-align: center;
+            color: black;
+        }
     </style>
 
     <div id="container"></div>
 
+    <a href="#" class="sb-show-value" onclick="alert(window['sb-value'].value);">SHOW JSON</a>
+
     <script>
+        const site = "http://localhost:9000";
+
         SiteBuilder.init({
             container: container,
             schema: SiteBuilder.defaultSchema,
+            thumbnailsUrl: site + "/static/files",
+            fileManager: FileManager({
+                api: site,
+                thumbnailsUrl: site + "/static/files",
+                uploadsUrl: site + "/upload",
+                downloadsUrl: site + "/static/files",
+            }),
             data:  `
                 [
                     {
                         "type": "Row",
+                        "id": "aaa",
+                        "class": "aaa",
                         "columns": [
                             {
+                                "id": "bbb",
+                                "class": "bbb",
                                 "rows": [
                                     {
-                                        "type": "Text",
-                                        "content": "<p>jjjjjj</p>",
-                                        "className": "ddddd"
-                                    },
-                                    {
                                         "type": "Row",
+                                        "id": "",
+                                        "class": "",
                                         "columns": [
                                             {
+                                                "id": "",
+                                                "class": "",
                                                 "rows": [
                                                     {
-                                                        "type": "Text",
-                                                        "content": "<p>ff</p>",
-                                                        "className": ""
+                                                        "type": "Gallery",
+                                                        "images": [
+                                                            "/Image 2.jpg",
+                                                            "/Image 1.jpg"
+                                                        ]
                                                     }
                                                 ]
                                             },
                                             {
+                                                "id": "",
+                                                "class": "",
                                                 "rows": [
                                                     {
-                                                        "type": "Text",
-                                                        "content": "<p>tttttttt</p>",
+                                                        "type": "Image",
+                                                        "image": "/Image 2.jpg",
                                                         "className": ""
                                                     }
                                                 ]
@@ -62,6 +94,8 @@
                                 ]
                             },
                             {
+                                "id": "",
+                                "class": "",
                                 "rows": [
                                     {
                                         "type": "Html",
@@ -71,10 +105,6 @@
                                         "type": "Text",
                                         "content": "<p>aseffas</p>",
                                         "className": ""
-                                    },
-                                    {
-                                        "type": "Html",
-                                        "html": "eeeeeeeedffd"
                                     }
                                 ]
                             }

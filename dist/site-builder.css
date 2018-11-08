@@ -12,10 +12,6 @@
     cursor: pointer;
 }
 
-.sb-textarea {
-    display: block;
-}
-
 .sb-icon {
     width: 15px;
     height: 15px;
@@ -26,8 +22,9 @@
     cursor: pointer;
 }
 
-.sb-icon i {
-    color: #D0D0D0;
+.sb-icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .sb-column {
@@ -69,6 +66,7 @@
     border: none;
     border-radius: 50%;
     margin: auto;
+    cursor: pointer;
 }
 
 .sb-row { /* DEPRECATED */
@@ -103,8 +101,16 @@
     background-color: #FFFFFF;
 }
 
+.sb-block p {
+    margin: 0;
+}
+
 .sb-block-head {
     display: flex;
+}
+
+.sb-block-head .fa-caret-down, .sb-block-head .fa-caret-up {
+    transform: translateY(-5px);
 }
 
 .sb-block-name {
@@ -118,11 +124,16 @@
 }
 
 .sb-top-block > .sb-block-head {
-    padding: 0 5px;
+    justify-content: flex-end;
+    padding: 0 10px;
 }
 
 .sb-dragged {
-    outline: solid 2px red;
+    outline: solid 2px #0078D4;
+}
+
+.sb-target {
+    outline: solid 2px #0078D4;
 }
 
 .sb-up-drop {
@@ -199,12 +210,31 @@
 
 .sb-modal {
     padding: 20px;
+    max-width: 500px;
     font-family: sans-serif;
     background-color: #FFFFFF;
 }
 
-.sb-modal > h1 {
+.sb-modal > h2 {
     margin: 0;
+}
+
+.sb-field {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.sb-modal input, .sb-modal textarea {
+    display: block;
+}
+
+.sb-modal textarea, .sb-modal .sb-quill {
+    width: 495px;
+}
+
+.sb-modal textarea {
+    min-height: 50px;
+    box-sizing: border-box;
 }
 
 .sb-wrap {
@@ -214,5 +244,56 @@
 }
 
 .sb-content {
-    padding: 20px 0;
+    padding: 10px 0;
+}
+
+/* Images Field */
+
+.sb-images-field {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    grid-auto-rows: 60px;
+    grid-gap: 5px;
+    width: 350px;
+    margin-bottom: 10px;
+}
+
+.sb-images-field .sb-thumb {
+    position: relative;
+    overflow: hidden;
+}
+
+.sb-images-field .sb-hidden {
+    display: none;
+}
+
+.sb-images-field img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sb-images-field .sb-clear {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 0;
+    font-size: 16px;
+    background-color: #E81123;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.sb-images-field .sb-add {
+    border: none;
+    font-size: 36px;
+    color: #FFFFFF;
+    background-color: #0078D4;
+    cursor: pointer;
 }
