@@ -37,81 +37,21 @@
     <a href="#" class="sb-show-value" onclick="alert(window['sb-value'].value);">SHOW JSON</a>
 
     <script>
-        const site = "http://localhost:3000";
+        const site = "http://localhost:3001";
 
-        SiteBuilder.init({
-            container: container,
-            schema: SiteBuilder.defaultSchema,
-            thumbnailsUrl: site + "/static/files",
-            fileManager: FileManager({
-                api: site,
+        fetch(site + "/static/data.json").then(x => x.json()).then(data => {
+            SiteBuilder.init({
+                container: container,
+                schema: SiteBuilder.defaultSchema,
                 thumbnailsUrl: site + "/static/files",
-                uploadsUrl: site + "/upload",
-                downloadsUrl: site + "/static/files",
-            }),
-            data:  `
-                [
-                    {
-                        "type": "Row",
-                        "id": "aaa",
-                        "class": "aaa",
-                        "columns": [
-                            {
-                                "id": "bbb",
-                                "class": "bbb",
-                                "rows": [
-                                    {
-                                        "type": "Row",
-                                        "id": "",
-                                        "class": "",
-                                        "columns": [
-                                            {
-                                                "id": "",
-                                                "class": "",
-                                                "rows": [
-                                                    {
-                                                        "type": "Gallery",
-                                                        "images": [
-                                                            "/Image 2.jpg",
-                                                            "/Image 1.jpg"
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "id": "",
-                                                "class": "",
-                                                "rows": [
-                                                    {
-                                                        "type": "Image",
-                                                        "image": "/Image 2.jpg",
-                                                        "className": ""
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "",
-                                "class": "",
-                                "rows": [
-                                    {
-                                        "type": "Html",
-                                        "html": "wwrwr"
-                                    },
-                                    {
-                                        "type": "Text",
-                                        "content": "<p>aseffas</p>",
-                                        "className": ""
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            `
+                fileManager: FileManager({
+                    api: site,
+                    thumbnailsUrl: site + "/static/files",
+                    uploadsUrl: site + "/upload",
+                    downloadsUrl: site + "/static/files",
+                }),
+                data: data
+            });
         });
     </script>
 

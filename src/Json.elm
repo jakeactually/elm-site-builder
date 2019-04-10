@@ -49,8 +49,8 @@ encodeValue value = case value of
 
 -- Decode
 
-decode : Schema -> String -> Column
-decode schema str = case Decode.decodeString (Decode.list <| maybeRowDecoder schema) str of
+decode : Schema -> Encode.Value -> Column
+decode schema str = case decodeValue (Decode.list <| maybeRowDecoder schema) str of
   Ok rows -> let (Column c) = newColumn in Column { c | rows = rows }
   Err _ -> newColumn
 

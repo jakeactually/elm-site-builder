@@ -13,7 +13,7 @@ import Tuple exposing (pair)
 
 type alias Flags =
   { schema : Json.Decode.Value
-  , data : String
+  , data : Json.Decode.Value
   , thumbnailsUrl : String
   }
 
