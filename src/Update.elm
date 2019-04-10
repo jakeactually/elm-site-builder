@@ -13,11 +13,17 @@ import Tuple exposing (pair, second)
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg (context, column) = case msg of
   BuilderMsg columnMsg ->
-    pair (evalColumnMsg columnMsg { context | currentBuilderMsg = columnMsg }, updateColumn columnMsg column) Cmd.none
+    pair (evalColumnMsg columnMsg { context | currentBuilderMsg = columnMsg }, updateColumn columnMsg <| resetColumn column) Cmd.none
   ContextMsg contextMsg -> case contextMsg of
     OpenFileManager i -> pair ({ context | currentFieldIndex = i }, column) <| openFileManager ()
     _ -> pair (updateContext contextMsg context column) Cmd.none
   NoMsg -> pair (context, column) Cmd.none
+
+resetColumn : Column -> Column
+resetColumn (Column column) = Column { column | rows = map resetRow column.rows } 
+
+resetRow :  Row -> Row
+resetRow (Row row) = Row { row | dragged = False, isTarget = False, columns = map resetColumn row.columns } 
 
 evalColumnMsg : ColumnMsg -> Context -> Context
 evalColumnMsg columnMsg context = case columnMsg of
@@ -29,7 +35,8 @@ evalColumnMsg columnMsg context = case columnMsg of
 evalRowMsg : RowMsg -> Context -> Context
 evalRowMsg rowMsg context = case rowMsg of
   Edit form -> { context | showEditBlockDialog = True, currentForm = form, updater = Ok Save }
-  DragStart row -> { context | currentRow = row }
+  DragStart row -> { context | currentRow = Just row }
+  Drop _ -> { context | currentRow = Nothing }
   ColumnMsg _ columnMsg -> evalColumnMsg columnMsg context  
   _ -> context
 
@@ -52,6 +59,7 @@ updateRow rowMsg (Row row) = Row <| case rowMsg of
   AddColumn -> { row | columns = if length row.columns < 4 then row.columns ++ [ newColumn ] else row.columns }
   Save form  -> { row | form = form }
   DragStart _ -> { row | dragged = True }
+  Highlight -> { row | isTarget = True }
   DragEnd -> { row | dragged = False }
   ColumnMsg i columnMsg -> case columnMsg of
     GoLeft -> { row | columns = Util.swap i (i - 1) row.columns }

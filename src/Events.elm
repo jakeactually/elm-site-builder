@@ -4,29 +4,17 @@ import Json.Decode as Decode exposing (Decoder)
 import Html exposing (Attribute)
 import Html.Events exposing (on, custom)
 
-onDragStart : msg -> Attribute msg
-onDragStart message =
-  custom "dragstart" <| options True False <| Decode.succeed message
+onMouseDown : msg -> Attribute msg
+onMouseDown = custom "mousedown" << options True False << Decode.succeed
 
-onDragEnd : msg -> Attribute msg
-onDragEnd message =
-  custom "dragend" <| options True False <| Decode.succeed message
+onMouseOver : msg -> Attribute msg
+onMouseOver = custom "mouseover" << options True False << Decode.succeed
 
-onDragEnter : msg -> Attribute msg
-onDragEnter message =
-  custom "dragenter" <| options True False <| Decode.succeed message
+onMouseOut : msg -> Attribute msg
+onMouseOut = custom "mouseout" << options True False << Decode.succeed
 
-onDragLeave : msg -> Attribute msg
-onDragLeave message =
-  custom "dragleave" <| options True False <| Decode.succeed message
-
-onDragOver : msg -> Attribute msg
-onDragOver message =
-  custom "dragover" <| options True True <| Decode.succeed message
-
-onDrop : msg -> Attribute msg
-onDrop message =
-  custom "drop" <| options True False <| Decode.succeed message
+onMouseUp : msg -> Attribute msg
+onMouseUp = custom "mouseup" << options True False << Decode.succeed
 
 options : Bool -> Bool -> Decoder msg -> Decoder
   { message : msg

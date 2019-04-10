@@ -16,7 +16,7 @@ import List exposing (indexedMap, length)
 import Markdown exposing (toHtmlWith, defaultOptions)
 import Model exposing (..)
 import String exposing (fromInt)
-import Util
+import Util exposing (isJust)
 
 buttonIcon : Html msg -> String -> msg -> Html msg
 buttonIcon icon titleText msg  = button [ class "sb-icon", title titleText, onClick msg ] [ icon ]
@@ -67,14 +67,16 @@ renderTopRow context i (Row { form, columns }) = Html.map (RowMsg i) <| div [ cl
   ]
 
 renderRow : Context -> Int -> Row -> Html ColumnMsg
-renderRow context i (Row { isBlock, form, dragged, columns } as row) = Html.map (RowMsg i) <| div
+renderRow context i (Row { isBlock, form, dragged, columns, isTarget } as row) = Html.map (RowMsg i) <| div
   [ class "sb-block"
-  , class <| if dragged then "sb-dragged" else ""
+  , class <| if dragged then "sb-dragged" else ""  
+  , class <| if isTarget then "sb-target" else ""
   , draggable "true"
-  , onDragStart <| DragStart row
-  , onDragEnd DragEnd
-  , onDragOver NoRowMsg
-  , onDrop <| Drop context.currentRow
+  , onMouseDown <| DragStart row
+  , onMouseOver <| if isJust context.currentRow then Highlight else NoRowMsg  
+  , onMouseUp <| case context.currentRow of
+      Just r -> Drop r
+      Nothing -> NoRowMsg
   ]
   [ rowControl row
   , if isBlock 

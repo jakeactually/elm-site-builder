@@ -26,7 +26,7 @@ type alias Context =
   , showEditBlockDialog : Bool
   , currentBuilderMsg : ColumnMsg
   , updater : Result (Form -> ColumnMsg) (Form -> RowMsg)
-  , currentRow : Row
+  , currentRow : Maybe Row
   , currentForm : Form
   , currentFieldIndex : Int
   }
@@ -42,7 +42,7 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , showEditBlockDialog = False
   , currentBuilderMsg = SelectBlock
   , updater = Ok (always NoRowMsg)
-  , currentRow = newRow
+  , currentRow = Nothing
   , currentForm = Form "" []
   , currentFieldIndex = 0
   }

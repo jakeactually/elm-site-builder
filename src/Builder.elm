@@ -75,6 +75,7 @@ type RowMsg
   | GoDown
   | Delete
   | DragStart Row
+  | Highlight
   | DragEnd
   | Drop Row
   | NoRowMsg

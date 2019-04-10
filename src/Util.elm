@@ -29,3 +29,8 @@ swap i1 i2 list = case (get i1 list, get i2 list) of
 
 capitalize : String -> String
 capitalize str = toUpper (left 1 str) ++ dropLeft 1 str
+
+isJust : Maybe a -> Bool
+isJust maybe = case maybe of
+  Just _ -> True
+  Nothing -> False
