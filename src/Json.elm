@@ -1,6 +1,6 @@
 module Json exposing (..)
 
-import Builder exposing (..)
+import Column exposing (..)
 import Dict exposing (Dict)
 import Field.Model exposing (..)
 import Field.Util exposing (getStringAt)

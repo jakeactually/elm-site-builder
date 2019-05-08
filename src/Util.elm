@@ -22,6 +22,14 @@ duplicate index list =
   let start = take (index + 1) list
   in start ++ drop index start ++ drop (index + 1) list
 
+splitAt : Int -> List a -> (List a, List a)
+splitAt n xs = (take n xs, drop n xs)
+
+insert : Int -> a -> List a -> List a
+insert index item list =
+  let (start, end) = splitAt index list
+  in start ++ item :: end
+
 swap : Int -> Int -> List a -> List a
 swap i1 i2 list = case (get i1 list, get i2 list) of
   (Just item1, Just item2) -> set i2 item1 <| set i1 item2 list

@@ -14,7 +14,7 @@ import String exposing (fromInt)
 import Util exposing (capitalize, remove)
 
 renderField : String -> Int -> Field ->  Html Msg
-renderField thumbnailsUrl index (Field name value) = Html.map ContextMsg <| case value of
+renderField thumbnailsUrl index (Field name value) = Html.map contextMsg <| case value of
   TextValue text_ -> renderTextField index name text_
   TextAreaValue text_ -> renderTextAreaField index name text_
   RichTextValue text_ -> renderRichTextField index name text_

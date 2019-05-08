@@ -1,6 +1,6 @@
 module Model exposing (..)
 
-import Builder exposing (..)
+import Column exposing (..)
 import Dict exposing (empty)
 import Json
 import Json.Encode
@@ -10,6 +10,7 @@ import List exposing (map)
 import Result exposing (withDefault)
 import Schema exposing (..)
 import Tuple exposing (pair)
+import Vec exposing (Vec2(..))
 
 type alias Flags =
   { schema : Json.Decode.Value
@@ -17,41 +18,53 @@ type alias Flags =
   , thumbnailsUrl : String
   }
 
-type alias Model = (Context, Column)
-
-type alias Context =
-  { schema : Schema
+type alias Model =
+  { column : Column
+  , schema : Schema
   , thumbnailsUrl : String
   , showSelectBlockDialog : Bool
   , showEditBlockDialog : Bool
-  , currentBuilderMsg : ColumnMsg
-  , updater : Result (Form -> ColumnMsg) (Form -> RowMsg)
+  , currentColumnMsg : ColumnMsg
   , currentRow : Maybe Row
   , currentForm : Form
   , currentFieldIndex : Int
+  , start : Vec2
+  , cursor : Vec2
+  , dragging : Bool
   }
 
 init : Flags -> (Model, Cmd Msg)
 init flags = (initModel flags, Cmd.none)
 
 initModel : Flags -> Model
-initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSchema flags.schema in pair
-  { schema = decodedSchema
+initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSchema flags.schema in
+  { column = Json.decode decodedSchema flags.data
+  , schema = decodedSchema
   , thumbnailsUrl = flags.thumbnailsUrl
   , showSelectBlockDialog = False
   , showEditBlockDialog = False
-  , currentBuilderMsg = SelectBlock
-  , updater = Ok (always NoRowMsg)
+  , currentColumnMsg = SelectBlock
   , currentRow = Nothing
   , currentForm = Form "" []
   , currentFieldIndex = 0
+  , start = Vec2 0 0
+  , cursor = Vec2 0 0
+  , dragging = False
   }
-  <| Json.decode decodedSchema flags.data
 
-type Msg
-  = BuilderMsg ColumnMsg
-  | ContextMsg ContextMsg
-  | NoMsg
+type Msg = Msg ContextMsg ColumnMsg
+
+contextMsg : ContextMsg -> Msg
+contextMsg msg = Msg msg NoColumnMsg
+
+columnMsg : ColumnMsg -> Msg
+columnMsg = Msg NoContextMsg
+
+rowMsg : RowMsg -> Msg
+rowMsg = Msg NoContextMsg << RowMsg 0
+
+noMsg : Msg
+noMsg = Msg NoContextMsg NoColumnMsg
 
 type ContextMsg
   = NewBlock String
@@ -61,4 +74,10 @@ type ContextMsg
   | AcceptBlock
   | HideEditBlockDialog
   | RowBlock
+  | SetCursor Vec2
+  | MouseUp
+  | Reset  
+  | Edit Form
+  | DragStart Row Vec2
+  | DeleteCallerRow
   | NoContextMsg

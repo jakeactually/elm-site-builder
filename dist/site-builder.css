@@ -2,6 +2,15 @@
     font-family: sans-serif;
 }
 
+.sb-ball {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: #0078D4;
+    pointer-events: none;
+}
+
 .sb-button {
     padding: 5px 10px;
     margin-right: 7px;
@@ -97,7 +106,6 @@
 .sb-block {
     position: relative;
     padding: 5px;
-    margin-bottom: 5px;
     background-color: #FFFFFF;
 }
 
@@ -115,6 +123,30 @@
 
 .sb-block-name {
     flex-grow: 1;
+}
+
+.sb-gap {
+    position: relative;
+    z-index: 1;
+    height: 5px;
+}
+
+.sb-light {
+    height: 5px;
+    background-color: #0078D4;
+    opacity: 0;
+}
+
+.sb-dragging .sb-light {
+    opacity: 1;
+}
+
+.sb-dropzone {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -5px;
+    bottom: -5px;
 }
 
 .sb-top-block {

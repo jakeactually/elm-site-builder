@@ -1,6 +1,6 @@
 module Dialogs exposing (editBlockDialog, selectBlockDialog)
 
-import Builder exposing (..)
+import Column exposing (..)
 import Dict
 import Model exposing (..)
 import Field.View exposing (renderField)
@@ -29,16 +29,16 @@ selectBlockDialog schema = modal
   "Choose block"
   [ div [ class "sb-schemas" ] <| (map renderBlock <| Dict.keys schema) ++ [ rowBlock ]
   ]
-  [ button [ type_ "button", class "sb-button", onClick <| ContextMsg HideSelectBlockDialog ] [ text "Cancel" ]
+  [ button [ type_ "button", class "sb-button", onClick <| contextMsg HideSelectBlockDialog ] [ text "Cancel" ]
   ]
 
 renderBlock : String -> Html Msg
 renderBlock blockSchemaKey =
-  div [ class "sb-schema", onClick <| ContextMsg <| NewBlock <| blockSchemaKey ] [ text blockSchemaKey ]
+  div [ class "sb-schema", onClick <| contextMsg <| NewBlock <| blockSchemaKey ] [ text blockSchemaKey ]
 
 rowBlock : Html Msg
 rowBlock =
-  div [ class "sb-schema", onClick <| ContextMsg <| RowBlock ] [ text "Row" ]
+  div [ class "sb-schema", onClick <| contextMsg <| RowBlock ] [ text "Row" ]
 
 editBlockDialog : Form -> String -> Html Msg
 editBlockDialog form thumbnailsUrl =
@@ -48,6 +48,6 @@ renderCurrentBlock : String -> String -> List Field -> Html Msg
 renderCurrentBlock thumbnailsUrl id fields = modal
   (capitalize id)
   (indexedMap (renderField thumbnailsUrl) fields)
-  [ button [ type_ "button", class "sb-button", onClick <| ContextMsg HideEditBlockDialog ] [ text "Cancel" ]
-  , button [ type_ "button", class "sb-button", onClick <| ContextMsg <| AcceptBlock ] [ text "Ok" ]
+  [ button [ type_ "button", class "sb-button", onClick <| contextMsg HideEditBlockDialog ] [ text "Cancel" ]
+  , button [ type_ "button", class "sb-button", onClick <| contextMsg <| AcceptBlock ] [ text "Ok" ]
   ]

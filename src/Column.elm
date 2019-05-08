@@ -1,8 +1,9 @@
-module Builder exposing (..)
+module Column exposing (..)
 
 import Field.Model exposing (..)
 import List exposing (map)
 import Schema exposing (..)
+import Vec exposing (Vec2(..))
 
 type Column = Column
   { form : Form
@@ -64,17 +65,16 @@ type ColumnMsg
   | GoLeft
   | GoRight
   | DeleteColumn
+  | NoColumnMsg
   | RowMsg Int RowMsg
 
 type RowMsg
   = AddColumn
-  | Edit Form
   | Save Form
   | Duplicate
   | GoUp
   | GoDown
   | Delete
-  | DragStart Row
   | Highlight
   | DragEnd
   | Drop Row
