@@ -7,7 +7,7 @@ import Events exposing (..)
 import Field.Util exposing (..)
 import Field.View exposing (..)
 import Html exposing (Html, textarea, button, div, input, map, strong, text)
-import Html.Attributes exposing (attribute, class, draggable, id, style, title, type_, value)
+import Html.Attributes as A exposing (attribute, class, draggable, id, style, title, type_, value)
 import Html.Events exposing (onClick)
 import Json as J
 import Json.Encode as E
@@ -76,8 +76,6 @@ renderTopRow model i (Row { form, columns }) = map (rowLayer i) <| div [ class "
     [ map rowMsg <| buttonIcon Icons.addColumn "Add column" AddColumn
     , map contextMsg <| buttonIcon Icons.edit "Edit row" <| Edit form
     , map rowMsg <| buttonIcon Icons.copy "Duplicate" Duplicate
-    , map rowMsg <| buttonIcon Icons.up "Move up" GoUp
-    , map rowMsg <| buttonIcon Icons.down "Move down" GoDown
     , map rowMsg <| buttonIcon Icons.delete "Delete row" Delete
     ]
   , div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
@@ -85,9 +83,14 @@ renderTopRow model i (Row { form, columns }) = map (rowLayer i) <| div [ class "
 
 renderRow : Model -> Int -> Row -> Html Msg
 renderRow model i (Row { isBlock, form, dragged, columns, isTarget } as row) = map (rowLayer i) <| div []
-  [ div [ class "sb-block" ]
+  [ div
+    [ class "sb-block"
+    , class <| if model.dragging && dragged then "sb-dragged" else ""
+    , onMouseDown <| rowMsg << RowMouseDown row
+    , onMouseUp <| rowMsg <| RowMouseUp
+    ]
     [ rowControl row
-    , if isBlock 
+    , if isBlock
       then div []
         [ let (Form name fields) = form in case name of
           "Text" -> toHtmlWith { defaultOptions | sanitize = False } [] <| getStringAt 0 fields 
@@ -102,9 +105,10 @@ rowGap : Model -> Bool -> Html Msg
 rowGap model isTarget = div [ class "sb-gap" ]
   [ div
     [ class "sb-dropzone"
-    , Html.Attributes.map (Msg Reset << RowMsg 0) <| onMouseOver Highlight
+    , onMouseOver <| rowMsg GapMouseOver
+    , onMouseOut <| rowMsg GapMouseOut
     , onMouseUp <| case model.currentRow of
-        Just r -> Msg DeleteCallerRow <| RowMsg 0 <| Drop r
+        Just r -> rowMsg GapMouseUp
         Nothing -> noMsg
     ] []
   , div [ class <| if isTarget then "sb-light" else "" ] []
@@ -112,8 +116,7 @@ rowGap model isTarget = div [ class "sb-gap" ]
 
 rowControl : Row -> Html Msg
 rowControl (Row { isBlock, form } as row) = div [ class "sb-block-head" ]
-  [ strong [ class "sb-block-name" ] [ text <| let (Form name _) = form in name ]  
-  , map contextMsg <| button [ class "sb-icon", title "Move block", onMouseDown <| DragStart row ] [ Icons.move ]
+  [ strong [ class "sb-block-name" ] [ text <| let (Form name _) = form in name ]
   , map rowMsg <| if isBlock then div [] [] else buttonIcon Icons.addColumn "Add column" AddColumn
   , map contextMsg <| buttonIcon Icons.edit "Edit block" <| Edit form
   , map rowMsg <| buttonIcon Icons.copy "Duplicate" Duplicate

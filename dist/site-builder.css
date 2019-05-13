@@ -161,11 +161,7 @@
 }
 
 .sb-dragged {
-    outline: solid 2px #0078D4;
-}
-
-.sb-target {
-    outline: solid 2px #0078D4;
+    outline: solid 4px #0078D4;
 }
 
 .sb-up-drop {

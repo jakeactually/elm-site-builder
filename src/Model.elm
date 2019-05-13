@@ -52,19 +52,7 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , dragging = False
   }
 
-type Msg = Msg ContextMsg ColumnMsg
-
-contextMsg : ContextMsg -> Msg
-contextMsg msg = Msg msg NoColumnMsg
-
-columnMsg : ColumnMsg -> Msg
-columnMsg = Msg NoContextMsg
-
-rowMsg : RowMsg -> Msg
-rowMsg = Msg NoContextMsg << RowMsg 0
-
-noMsg : Msg
-noMsg = Msg NoContextMsg NoColumnMsg
+type Msg = ContextMsg ContextMsg | ColumnMsg ColumnMsg
 
 type ContextMsg
   = NewBlock String
@@ -78,6 +66,5 @@ type ContextMsg
   | MouseUp
   | Reset  
   | Edit Form
-  | DragStart Row Vec2
   | DeleteCallerRow
   | NoContextMsg

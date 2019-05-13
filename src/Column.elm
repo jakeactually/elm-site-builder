@@ -72,11 +72,11 @@ type RowMsg
   = AddColumn
   | Save Form
   | Duplicate
-  | GoUp
-  | GoDown
   | Delete
-  | Highlight
-  | DragEnd
-  | Drop Row
+  | RowMouseDown Row Vec2
+  | RowMouseUp
+  | GapMouseOver
+  | GapMouseOut
+  | GapMouseUp
   | NoRowMsg
   | ColumnMsg Int ColumnMsg

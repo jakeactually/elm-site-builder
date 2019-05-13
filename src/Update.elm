@@ -17,30 +17,8 @@ update (Msg contextMsg columnMsg) model =
   in pair
     { newModel
     | currentColumnMsg = columnMsg
-    , column = updateColumn columnMsg <| case contextMsg of
-        Reset -> resetColumn model.column
-        _ -> model.column
+    , column = updateColumn model columnMsg newModel.column
     } Cmd.none
-
-{-update : Msg -> Model -> (Model, Cmd Msg)
-update (Msg contextMsg columnMsg) model = case msg of
-  BuilderMsg columnMsg ->
-    { model | currentBuilderMsg = columnMsg, dragging = False, }, ) Cmd.none
-  ContextMsg contextMsg -> case contextMsg of
-    OpenFileManager i -> pair ({ context | currentFieldIndex = i }, column) <| openFileManager ()
-    _ -> pair (updateContext contextMsg context column) Cmd.none
-  NoMsg -> pair (context, column) Cmd.none-}
-
-resetColumn : Column -> Column
-resetColumn (Column column) = Column { column | rows = map resetRow column.rows } 
-
-resetRow :  Row -> Row
-resetRow (Row row) = Row
-  { row
-  | dragged = False
-  , isTarget = False
-  , columns = map resetColumn row.columns
-  } 
 
 evalColumnMsg : ColumnMsg -> Model -> Model
 evalColumnMsg columnMsg model = case columnMsg of
@@ -51,35 +29,52 @@ evalColumnMsg columnMsg model = case columnMsg of
 
 evalRowMsg : RowMsg -> Model -> Model
 evalRowMsg rowMsg model = case rowMsg of
-  Drop _ -> { model | currentRow = Nothing }
-  ColumnMsg _ columnMsg -> evalColumnMsg columnMsg model  
+  GapMouseUp ->
+    { model
+    | currentRow = Nothing
+    , dragging = False
+    , column = resetColumn (\(Row row) -> Row { row | dragged = False }) model.column
+    }
+  RowMouseDown row position -> { model | currentRow = Just row, start = position }
+  RowMouseUp ->
+    { model |
+    column = resetColumn (\(Row row) -> Row { row | dragged = False }) model.column
+    }
+  ColumnMsg _ columnMsg -> evalColumnMsg columnMsg model
   _ -> model
 
-updateColumn : ColumnMsg -> Column -> Column
-updateColumn columnMsg (Column column) = Column <| case columnMsg of
+resetColumn : (Row -> Row) -> Column -> Column
+resetColumn f (Column column) = Column { column | rows = map (resetRow f) column.rows } 
+
+resetRow : (Row -> Row) -> Row -> Row
+resetRow f (Row row) = f <| Row { row | columns = map (resetColumn f) row.columns }
+
+updateColumn : Model -> ColumnMsg -> Column -> Column
+updateColumn model columnMsg (Column column) = Column <| case columnMsg of
   AddBlock form -> { column | rows = column.rows ++ [ setForm form <| setIsBlock True <| newRow ] }
   AddRow -> { column | rows = column.rows ++ [ setColumns [ newColumn ] <| setIsBlock False <| newRow ] }
   SaveColumn form -> { column | form = form }
   RowMsg i rowMsg -> case rowMsg of
     Duplicate -> { column | rows = Util.duplicate i column.rows }
-    GoUp -> { column | rows = Util.swap i (i - 1) column.rows }
-    GoDown -> { column | rows = Util.swap i (i + 1) column.rows }
     Delete -> { column | rows = Util.remove i column.rows }
-    Drop block -> { column | rows = Util.insert (i + 1) block column.rows }
-    _ -> { column | rows = Util.update (updateRow rowMsg) i column.rows }
+    GapMouseUp -> case model.currentRow of
+      Just row -> { column | rows = Util.insert (i + 1) row column.rows }
+      Nothing -> column
+    _ -> { column | rows = Util.update (updateRow model rowMsg) i column.rows }
   _ -> column
 
-updateRow : RowMsg -> Row -> Row
-updateRow rowMsg (Row row) = Row <| case rowMsg of
+updateRow : Model -> RowMsg -> Row -> Row
+updateRow model rowMsg (Row row) = Row <| case rowMsg of
   AddColumn -> { row | columns = if length row.columns < 4 then row.columns ++ [ newColumn ] else row.columns }
   Save form  -> { row | form = form }
-  Highlight -> { row | isTarget = True }
-  DragEnd -> { row | dragged = False }
+  RowMouseDown _ _ -> { row | dragged = True }
+  GapMouseOver -> { row | isTarget = True }
+  GapMouseOut -> { row | isTarget = False }
   ColumnMsg i columnMsg -> case columnMsg of
     GoLeft -> { row | columns = Util.swap i (i - 1) row.columns }
     GoRight -> { row | columns = Util.swap i (i + 1) row.columns }
     DeleteColumn -> { row | columns = Util.remove i row.columns }
-    _ -> { row | columns = Util.update (updateColumn columnMsg) i row.columns }
+    _ -> { row | columns = Util.update (updateColumn model columnMsg) i row.columns }
   _ -> row
 
 mapColumnMsg : ColumnMsg -> ColumnMsg -> ColumnMsg
@@ -110,12 +105,12 @@ updateContext msg model = case msg of
   AcceptBlock ->
       { model
       | showEditBlockDialog = False
-      , column = updateColumn (mapColumnMsg AddRow model.currentColumnMsg) model.column
+      , column = updateColumn model (mapColumnMsg AddRow model.currentColumnMsg) model.column
       }
   RowBlock ->
     { model
     | showSelectBlockDialog = False
-    , column = updateColumn (mapColumnMsg AddRow model.currentColumnMsg) model.column
+    , column = updateColumn model (mapColumnMsg AddRow model.currentColumnMsg) model.column
     }
   SetCursor position ->
     { model
@@ -123,9 +118,8 @@ updateContext msg model = case msg of
     , dragging = isJust model.currentRow && isFar model.start position
     }
   Edit form -> { model | showEditBlockDialog = True, currentForm = form }
-  DragStart row position -> { model | currentRow = Just row, start = position }
-  MouseUp -> { model | currentRow = Nothing, dragging = False }
-  DeleteCallerRow -> { model | column = updateColumn (mapRowMsg Delete model.currentColumnMsg) model.column }
+  MouseUp -> { model | currentRow = Nothing, dragging = False, column = newColumn }
+  DeleteCallerRow -> { model | column = updateColumn model (mapRowMsg Delete model.currentColumnMsg) model.column }
   _ -> model
 
 updateBlock : Int -> FieldValue -> Form -> Form
