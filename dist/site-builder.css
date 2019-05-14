@@ -107,6 +107,10 @@
     position: relative;
     padding: 5px;
     background-color: #FFFFFF;
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
 }
 
 .sb-block p {

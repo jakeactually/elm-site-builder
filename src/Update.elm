@@ -9,11 +9,14 @@ import Model exposing (..)
 import Port exposing (openFileManager)
 import Util exposing (isJust)
 import Tuple exposing (pair, second)
+import Schema exposing (Schema)
 import Vec exposing (..)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
-  ContextMsg contextMsg -> (updateContext contextMsg model, Cmd.none)
+  ContextMsg contextMsg -> case contextMsg of
+    OpenFileManager index -> pair { model | currentFieldIndex = index } <| openFileManager ()
+    _ ->  (updateContext contextMsg model, Cmd.none)
   BuilderMsg columnMsg ->
     let newModel = evalColumnMsg columnMsg { model | currentColumnMsg = columnMsg }
     in pair { newModel | column = updateColumn model columnMsg newModel.column } Cmd.none
@@ -21,39 +24,34 @@ update msg model = case msg of
 
 evalColumnMsg : ColumnMsg -> Model -> Model
 evalColumnMsg columnMsg model = case columnMsg of
-  SelectBlock -> { model | showSelectBlockDialog = True }
-  EditColumn form -> { model | showEditBlockDialog = True, currentForm = form }
+  SelectBlock -> { model | showSelectBlockDialog = True, pointer = model.currentColumnMsg }
+  EditColumn form -> edit form (Err SaveColumn) model
   RowMsg _ rowMsg -> evalRowMsg rowMsg model
   _ -> model
 
 evalRowMsg : RowMsg -> Model -> Model
 evalRowMsg rowMsg model = case rowMsg of
-  EditRow form -> { model | showEditBlockDialog = True, currentForm = form }
-  GapMouseUp -> let newColumn = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column in
-    { model
-    | currentRow = Nothing
-    , dragging = False
-    }
+  EditRow form -> edit form (Ok Save) model
+  GapMouseUp -> reset model
   RowMouseDown row position ->
     { model
     | currentRow = Just row
     , pointer = model.currentColumnMsg
     , start = position
     }
-  RowMouseUp ->
-    { model
-    | column = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column
-    , currentRow = Nothing
-    , dragging = False
-    }
+  RowMouseUp -> reset model
   ColumnMsg _ columnMsg -> evalColumnMsg columnMsg model
   _ -> model
 
-resetColumn : (Row -> Row) -> Column -> Column
-resetColumn f (Column column) = Column { column | rows = map (resetRow f) column.rows } 
-
-resetRow : (Row -> Row) -> Row -> Row
-resetRow f (Row row) = f <| Row { row | columns = map (resetColumn f) row.columns }
+edit : Form -> Result (Form -> ColumnMsg) (Form -> RowMsg) -> Model -> Model
+edit form updater model =
+  { model
+  | showSelectBlockDialog = False
+  , showEditBlockDialog = True
+  , currentForm = form    
+  , updater = updater
+  , pointer = model.currentColumnMsg
+  }
 
 updateColumn : Model -> ColumnMsg -> Column -> Column
 updateColumn model columnMsg (Column column) = Column <| case columnMsg of
@@ -82,6 +80,20 @@ updateRow model rowMsg (Row row) = Row <| case rowMsg of
     _ -> { row | columns = Util.update (updateColumn model columnMsg) i row.columns }
   _ -> row
 
+reset : Model -> Model
+reset model =
+  { model
+  | column = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column
+  , currentRow = Nothing
+  , dragging = False
+  }
+
+resetColumn : (Row -> Row) -> Column -> Column
+resetColumn f (Column column) = Column { column | rows = map (resetRow f) column.rows } 
+
+resetRow : (Row -> Row) -> Row -> Row
+resetRow f (Row row) = f <| Row { row | columns = map (resetColumn f) row.columns }
+
 mapColumnMsg : ColumnMsg -> ColumnMsg -> ColumnMsg
 mapColumnMsg newMsg columnMsg = case columnMsg of
   RowMsg i rowMsg -> RowMsg i <| case rowMsg of
@@ -99,39 +111,43 @@ mapRowMsg newMsg columnMsg = case columnMsg of
 updateContext : ContextMsg -> Model -> Model
 updateContext msg model = case msg of
   HideSelectBlockDialog -> { model | showSelectBlockDialog = False }
-  NewBlock schemaKey ->
-    { model
-    | showSelectBlockDialog = False
-    , showEditBlockDialog = True
-    , currentForm = Form schemaKey <| map makeField <| withDefault [] <| Dict.get schemaKey model.schema
-    }
+  NewBlock schemaKey -> edit (newForm model.schema schemaKey) (Err AddBlock) model
   FieldInput i input -> { model | currentForm = updateBlock i input model.currentForm }
   HideEditBlockDialog -> { model | showEditBlockDialog = False }
   AcceptBlock ->
-      { model
-      | showEditBlockDialog = False
-      , column = updateColumn model (mapColumnMsg AddRow model.pointer) model.column
-      }
+    { model
+    | showEditBlockDialog = False
+    , column = case model.updater of
+        Ok rowUpdater -> pushRowMsg rowUpdater model
+        Err columnUpdater -> pushColumnMsg columnUpdater model
+    }
   RowBlock ->
     { model
     | showSelectBlockDialog = False
-    , column = updateColumn model (mapColumnMsg AddRow model.pointer) model.column
+    , column = pushColumnMsg (always AddRow) model
     }
-  SetCursor position -> let newDragging = isJust model.currentRow && isFar model.start position in
+  MouseMove position -> let newDragging = isJust model.currentRow && isFar model.start position in
     { model
     | cursor = position
     , dragging = newDragging
+    -- Only when dragging starts, delete the dragged row
     , column = if not model.dragging && newDragging
-        then updateColumn model (mapRowMsg Delete model.pointer) model.column
+        then pushRowMsg (always Delete) model
         else model.column
     }
-  MouseUp ->
-    { model
-    | column = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column
-    , currentRow = Nothing
-    , dragging = False
-    }
+  MouseUp -> reset model
   _ -> model
+
+pushColumnMsg : (Form -> ColumnMsg) -> Model -> Column
+pushColumnMsg columnUpdater model =
+  updateColumn model (mapColumnMsg (columnUpdater model.currentForm) model.pointer) model.column
+
+pushRowMsg : (Form -> RowMsg) -> Model -> Column
+pushRowMsg rowUpdater model =
+  updateColumn model (mapRowMsg (rowUpdater model.currentForm) model.pointer) model.column
+
+newForm : Schema -> String -> Form
+newForm schema schemaKey = Form schemaKey <| map makeField <| withDefault [] <| Dict.get schemaKey schema
 
 updateBlock : Int -> FieldValue -> Form -> Form
 updateBlock i value (Form name fields) = Form name <| Util.update (updateField value) i fields

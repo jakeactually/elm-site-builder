@@ -24,6 +24,7 @@ type alias Model =
   , thumbnailsUrl : String
   , showSelectBlockDialog : Bool
   , showEditBlockDialog : Bool
+  , updater : Result (Form -> ColumnMsg) (Form -> RowMsg)
   , currentColumnMsg : ColumnMsg
   , pointer : ColumnMsg
   , currentRow : Maybe Row
@@ -44,6 +45,7 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , thumbnailsUrl = flags.thumbnailsUrl
   , showSelectBlockDialog = False
   , showEditBlockDialog = False
+  , updater = Ok <| always NoRowMsg
   , currentColumnMsg = NoColumnMsg
   , pointer = NoColumnMsg
   , currentRow = Nothing
@@ -64,7 +66,7 @@ type ContextMsg
   | AcceptBlock
   | HideEditBlockDialog
   | RowBlock
-  | SetCursor Vec2
+  | MouseMove Vec2
   | MouseUp
   | Reset
   | NoContextMsg

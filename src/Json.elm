@@ -85,7 +85,6 @@ buildRow id class columns = Row
   { isBlock = False
   , form = Form "Row" [ Field "id" <| TextValue id, Field "class" <| TextValue class ]
   , columns = columns
-  , dragged = False
   , isTarget = False
   }
 

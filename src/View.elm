@@ -1,7 +1,6 @@
 module View exposing (view)
 
 import Builder exposing (..)
-import Debug exposing (toString)
 import Dialogs exposing (editBlockDialog, selectBlockDialog)
 import Events exposing (..)
 import Field.Util exposing (..)
@@ -23,7 +22,7 @@ view : Model -> Html Msg
 view model = let (Column { rows }) = model.column in div
   [ class "sb-main"
   , class <| if model.dragging then "sb-dragging" else ""
-  , onMouseMove <| ContextMsg << SetCursor
+  , onMouseMove <| ContextMsg << MouseMove
   , onMouseUp <| ContextMsg MouseUp
   ]
   [ Html.map BuilderMsg <| div [ class "column" ] <| indexedMap (renderTopRow model) rows ++ [ addRow ]
@@ -35,7 +34,6 @@ view model = let (Column { rows }) = model.column in div
         let (Vec2 x y) = model.cursor
         in div [ class "sb-ball", style "left" (toPx (x - 10)), style "top" (toPx (y - 10)) ] []
       else div [] []
-  , div [] [ text <| toString model ]
   ]
 
 toPx : Float -> String
