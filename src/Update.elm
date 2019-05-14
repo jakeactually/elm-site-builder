@@ -1,6 +1,6 @@
 module Update exposing (update)
 
-import Column exposing (..)
+import Builder exposing (..)
 import Dict
 import Field.Model exposing (..)
 import List exposing (length, map)
@@ -12,13 +12,12 @@ import Tuple exposing (pair, second)
 import Vec exposing (..)
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update (Msg contextMsg columnMsg) model =
-  let newModel = evalColumnMsg columnMsg <| updateContext contextMsg model
-  in pair
-    { newModel
-    | currentColumnMsg = columnMsg
-    , column = updateColumn model columnMsg newModel.column
-    } Cmd.none
+update msg model = case msg of
+  ContextMsg contextMsg -> (updateContext contextMsg model, Cmd.none)
+  BuilderMsg columnMsg ->
+    let newModel = evalColumnMsg columnMsg { model | currentColumnMsg = columnMsg }
+    in pair { newModel | column = updateColumn model columnMsg newModel.column } Cmd.none
+  NoMsg -> (model, Cmd.none)
 
 evalColumnMsg : ColumnMsg -> Model -> Model
 evalColumnMsg columnMsg model = case columnMsg of
@@ -29,16 +28,23 @@ evalColumnMsg columnMsg model = case columnMsg of
 
 evalRowMsg : RowMsg -> Model -> Model
 evalRowMsg rowMsg model = case rowMsg of
-  GapMouseUp ->
+  EditRow form -> { model | showEditBlockDialog = True, currentForm = form }
+  GapMouseUp -> let newColumn = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column in
     { model
     | currentRow = Nothing
     , dragging = False
-    , column = resetColumn (\(Row row) -> Row { row | dragged = False }) model.column
     }
-  RowMouseDown row position -> { model | currentRow = Just row, start = position }
+  RowMouseDown row position ->
+    { model
+    | currentRow = Just row
+    , pointer = model.currentColumnMsg
+    , start = position
+    }
   RowMouseUp ->
-    { model |
-    column = resetColumn (\(Row row) -> Row { row | dragged = False }) model.column
+    { model
+    | column = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column
+    , currentRow = Nothing
+    , dragging = False
     }
   ColumnMsg _ columnMsg -> evalColumnMsg columnMsg model
   _ -> model
@@ -67,7 +73,6 @@ updateRow : Model -> RowMsg -> Row -> Row
 updateRow model rowMsg (Row row) = Row <| case rowMsg of
   AddColumn -> { row | columns = if length row.columns < 4 then row.columns ++ [ newColumn ] else row.columns }
   Save form  -> { row | form = form }
-  RowMouseDown _ _ -> { row | dragged = True }
   GapMouseOver -> { row | isTarget = True }
   GapMouseOut -> { row | isTarget = False }
   ColumnMsg i columnMsg -> case columnMsg of
@@ -105,21 +110,27 @@ updateContext msg model = case msg of
   AcceptBlock ->
       { model
       | showEditBlockDialog = False
-      , column = updateColumn model (mapColumnMsg AddRow model.currentColumnMsg) model.column
+      , column = updateColumn model (mapColumnMsg AddRow model.pointer) model.column
       }
   RowBlock ->
     { model
     | showSelectBlockDialog = False
-    , column = updateColumn model (mapColumnMsg AddRow model.currentColumnMsg) model.column
+    , column = updateColumn model (mapColumnMsg AddRow model.pointer) model.column
     }
-  SetCursor position ->
+  SetCursor position -> let newDragging = isJust model.currentRow && isFar model.start position in
     { model
     | cursor = position
-    , dragging = isJust model.currentRow && isFar model.start position
+    , dragging = newDragging
+    , column = if not model.dragging && newDragging
+        then updateColumn model (mapRowMsg Delete model.pointer) model.column
+        else model.column
     }
-  Edit form -> { model | showEditBlockDialog = True, currentForm = form }
-  MouseUp -> { model | currentRow = Nothing, dragging = False, column = newColumn }
-  DeleteCallerRow -> { model | column = updateColumn model (mapRowMsg Delete model.currentColumnMsg) model.column }
+  MouseUp ->
+    { model
+    | column = resetColumn (\(Row row) -> Row { row | isTarget = False }) model.column
+    , currentRow = Nothing
+    , dragging = False
+    }
   _ -> model
 
 updateBlock : Int -> FieldValue -> Form -> Form

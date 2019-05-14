@@ -1,12 +1,12 @@
 module View exposing (view)
 
-import Column exposing (..)
+import Builder exposing (..)
 import Debug exposing (toString)
 import Dialogs exposing (editBlockDialog, selectBlockDialog)
 import Events exposing (..)
 import Field.Util exposing (..)
 import Field.View exposing (..)
-import Html exposing (Html, textarea, button, div, input, map, strong, text)
+import Html exposing (Html, textarea, button, div, input, strong, text)
 import Html.Attributes as A exposing (attribute, class, draggable, id, style, title, type_, value)
 import Html.Events exposing (onClick)
 import Json as J
@@ -23,10 +23,10 @@ view : Model -> Html Msg
 view model = let (Column { rows }) = model.column in div
   [ class "sb-main"
   , class <| if model.dragging then "sb-dragging" else ""
-  , onMouseMove <| contextMsg << SetCursor
-  , onMouseUp <| contextMsg MouseUp
+  , onMouseMove <| ContextMsg << SetCursor
+  , onMouseUp <| ContextMsg MouseUp
   ]
-  [ div [ class "column" ] <| indexedMap (renderTopRow model) rows ++ [ map columnMsg addRow ]
+  [ Html.map BuilderMsg <| div [ class "column" ] <| indexedMap (renderTopRow model) rows ++ [ addRow ]
   , if model.showSelectBlockDialog then selectBlockDialog model.schema else div [] []
   , if model.showEditBlockDialog then editBlockDialog model.currentForm model.thumbnailsUrl else div [] []
   , input [ id "sb-value", type_ "hidden", value <| E.encode 4 <| J.encode model.schema <| model.column ] []
@@ -38,14 +38,6 @@ view model = let (Column { rows }) = model.column in div
   , div [] [ text <| toString model ]
   ]
 
-columnLayer : Int -> Msg -> Msg
-columnLayer i (Msg contextMsg columnMsg) = Msg contextMsg <| RowMsg 0 <| ColumnMsg i columnMsg
-
-rowLayer : Int -> Msg -> Msg
-rowLayer i (Msg contextMsg columnMsg) = Msg contextMsg <| case columnMsg of
-  RowMsg _ msg -> RowMsg i msg
-  _ -> columnMsg
-
 toPx : Float -> String
 toPx n = fromFloat n ++ "px"
 
@@ -54,12 +46,12 @@ addRow = div [ class "sb-add-bar" ]
   [ button [ onClick <| AddBlock <| Form "Row" [], title "Add row" ] [ text "+" ]
   ]
 
-renderColumn : Model -> Int -> Int -> Column -> Html Msg
-renderColumn model basis i (Column { form, rows } as column) = map (columnLayer i) <| div
+renderColumn : Model -> Int -> Int -> Column -> Html RowMsg
+renderColumn model basis i (Column { form, rows } as column) = Html.map (ColumnMsg i) <| div
   [ class "sb-column"
   , class <| "sb-basis-" ++ fromInt basis
   ]
-  <| map columnMsg (columnControl column) :: indexedMap (renderRow model) rows
+  <| columnControl column :: indexedMap (renderRow model) rows
 
 columnControl : Column -> Html ColumnMsg
 columnControl (Column { form }) = div [ class "sb-column-control" ]
@@ -70,24 +62,23 @@ columnControl (Column { form }) = div [ class "sb-column-control" ]
   , buttonIcon Icons.delete "Delete column" DeleteColumn
   ]
 
-renderTopRow : Model -> Int -> Row -> Html Msg
-renderTopRow model i (Row { form, columns }) = map (rowLayer i) <| div [ class "sb-top-block" ]
+renderTopRow : Model -> Int -> Row -> Html ColumnMsg
+renderTopRow model i (Row { form, columns }) = Html.map (RowMsg i) <| div [ class "sb-top-block" ]
   [ div [ class "sb-block-head" ]
-    [ map rowMsg <| buttonIcon Icons.addColumn "Add column" AddColumn
-    , map contextMsg <| buttonIcon Icons.edit "Edit row" <| Edit form
-    , map rowMsg <| buttonIcon Icons.copy "Duplicate" Duplicate
-    , map rowMsg <| buttonIcon Icons.delete "Delete row" Delete
+    [ buttonIcon Icons.addColumn "Add column" AddColumn
+    , buttonIcon Icons.edit "Edit row" <| EditRow form
+    , buttonIcon Icons.copy "Duplicate" Duplicate
+    , buttonIcon Icons.delete "Delete row" Delete
     ]
   , div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
   ]
 
-renderRow : Model -> Int -> Row -> Html Msg
-renderRow model i (Row { isBlock, form, dragged, columns, isTarget } as row) = map (rowLayer i) <| div []
+renderRow : Model -> Int -> Row -> Html ColumnMsg
+renderRow model i (Row { isBlock, form, columns, isTarget } as row) = Html.map (RowMsg i) <| div []
   [ div
     [ class "sb-block"
-    , class <| if model.dragging && dragged then "sb-dragged" else ""
-    , onMouseDown <| rowMsg << RowMouseDown row
-    , onMouseUp <| rowMsg <| RowMouseUp
+    , onMouseDown <| RowMouseDown row
+    , onMouseUp <| RowMouseUp
     ]
     [ rowControl row
     , if isBlock
@@ -101,26 +92,26 @@ renderRow model i (Row { isBlock, form, dragged, columns, isTarget } as row) = m
   , rowGap model isTarget
   ]
 
-rowGap : Model -> Bool -> Html Msg
+rowGap : Model -> Bool -> Html RowMsg
 rowGap model isTarget = div [ class "sb-gap" ]
   [ div
     [ class "sb-dropzone"
-    , onMouseOver <| rowMsg GapMouseOver
-    , onMouseOut <| rowMsg GapMouseOut
+    , onMouseOver <| GapMouseOver
+    , onMouseOut <| GapMouseOut
     , onMouseUp <| case model.currentRow of
-        Just r -> rowMsg GapMouseUp
-        Nothing -> noMsg
+        Just r -> GapMouseUp
+        Nothing -> NoRowMsg
     ] []
   , div [ class <| if isTarget then "sb-light" else "" ] []
   ]
 
-rowControl : Row -> Html Msg
+rowControl : Row -> Html RowMsg
 rowControl (Row { isBlock, form } as row) = div [ class "sb-block-head" ]
   [ strong [ class "sb-block-name" ] [ text <| let (Form name _) = form in name ]
-  , map rowMsg <| if isBlock then div [] [] else buttonIcon Icons.addColumn "Add column" AddColumn
-  , map contextMsg <| buttonIcon Icons.edit "Edit block" <| Edit form
-  , map rowMsg <| buttonIcon Icons.copy "Duplicate" Duplicate
-  , map rowMsg <| buttonIcon Icons.delete "Delete block" Delete
+  , if isBlock then div [] [] else buttonIcon Icons.addColumn "Add column" AddColumn
+  , buttonIcon Icons.edit "Edit block" <| EditRow form
+  , buttonIcon Icons.copy "Duplicate" Duplicate
+  , buttonIcon Icons.delete "Delete block" Delete
   ]
 
 buttonIcon : Html msg -> String -> msg -> Html msg

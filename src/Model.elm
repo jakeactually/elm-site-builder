@@ -1,6 +1,6 @@
 module Model exposing (..)
 
-import Column exposing (..)
+import Builder exposing (..)
 import Dict exposing (empty)
 import Json
 import Json.Encode
@@ -25,6 +25,7 @@ type alias Model =
   , showSelectBlockDialog : Bool
   , showEditBlockDialog : Bool
   , currentColumnMsg : ColumnMsg
+  , pointer : ColumnMsg
   , currentRow : Maybe Row
   , currentForm : Form
   , currentFieldIndex : Int
@@ -43,7 +44,8 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , thumbnailsUrl = flags.thumbnailsUrl
   , showSelectBlockDialog = False
   , showEditBlockDialog = False
-  , currentColumnMsg = SelectBlock
+  , currentColumnMsg = NoColumnMsg
+  , pointer = NoColumnMsg
   , currentRow = Nothing
   , currentForm = Form "" []
   , currentFieldIndex = 0
@@ -52,7 +54,7 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , dragging = False
   }
 
-type Msg = ContextMsg ContextMsg | ColumnMsg ColumnMsg
+type Msg = ContextMsg ContextMsg | BuilderMsg ColumnMsg | NoMsg
 
 type ContextMsg
   = NewBlock String
@@ -64,7 +66,5 @@ type ContextMsg
   | RowBlock
   | SetCursor Vec2
   | MouseUp
-  | Reset  
-  | Edit Form
-  | DeleteCallerRow
+  | Reset
   | NoContextMsg

@@ -1,4 +1,4 @@
-module Column exposing (..)
+module Builder exposing (..)
 
 import Field.Model exposing (..)
 import List exposing (map)
@@ -26,7 +26,6 @@ type Row = Row
   { isBlock : Bool
   , form : Form
   , columns : List Column
-  , dragged : Bool
   , isTarget : Bool
   }
 
@@ -46,7 +45,6 @@ newRow = Row
   { isBlock = False
   , form = rowForm
   , columns = []
-  , dragged = False
   , isTarget = False
   }
 
@@ -71,6 +69,7 @@ type ColumnMsg
 type RowMsg
   = AddColumn
   | Save Form
+  | EditRow Form
   | Duplicate
   | Delete
   | RowMouseDown Row Vec2

@@ -160,10 +160,6 @@
     padding: 0 10px;
 }
 
-.sb-dragged {
-    outline: solid 4px #0078D4;
-}
-
 .sb-up-drop {
     position: absolute;
     left: 0;
