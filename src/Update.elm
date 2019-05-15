@@ -26,6 +26,7 @@ evalColumnMsg : ColumnMsg -> Model -> Model
 evalColumnMsg columnMsg model = case columnMsg of
   SelectBlock -> { model | showSelectBlockDialog = True, pointer = model.currentColumnMsg }
   EditColumn form -> edit form (Err SaveColumn) model
+  ColumnGapMouseUp -> { model | currentRow = Nothing, dragging = False }
   RowMsg _ rowMsg -> evalRowMsg rowMsg model
   _ -> model
 
@@ -58,6 +59,9 @@ updateColumn model columnMsg (Column column) = Column <| case columnMsg of
   AddBlock form -> { column | rows = column.rows ++ [ setForm form <| setIsBlock True <| newRow ] }
   AddRow -> { column | rows = column.rows ++ [ setColumns [ newColumn ] <| setIsBlock False <| newRow ] }
   SaveColumn form -> { column | form = form }
+  ColumnGapMouseOver -> { column | isTarget = True }
+  ColumnGapMouseOut -> { column | isTarget = False }
+  ColumnGapMouseUp -> { column | isTarget = False , rows = Util.maybeToList model.currentRow }
   RowMsg i rowMsg -> case rowMsg of
     Duplicate -> { column | rows = Util.duplicate i column.rows }
     Delete -> { column | rows = Util.remove i column.rows }

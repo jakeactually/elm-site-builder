@@ -42,3 +42,8 @@ isJust : Maybe a -> Bool
 isJust maybe = case maybe of
   Just _ -> True
   Nothing -> False
+
+maybeToList : Maybe a -> List a
+maybeToList maybe = case maybe of
+  Just a -> [a]
+  Nothing -> []

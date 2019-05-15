@@ -13,47 +13,41 @@
     <script src="site-builder.js"></script>
 </head>
 <body>
-    
     <style>
         body {
             margin: 0;
+            background: #f3f2f1;
         }
 
-        a.sb-show-value {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 4px;
-            width: 125px;
-            margin: auto;
-            font-family: sans-serif;
-            text-align: center;
+        .sb-show-value {
+            display: block;
+            padding: 10px 0 0 10px;
             color: black;
+            font-family: sans-serif;
         }
     </style>
-
+    
+    <a href="#" class="sb-show-value" onclick="alert(window['sb-value'].value);">show json</a>
     <div id="container"></div>
-
-    <a href="#" class="sb-show-value" onclick="alert(window['sb-value'].value);">SHOW JSON</a>
-
-    <script>
-        const site = "http://localhost:3001";
-
-        fetch(site + "/static/data.json").then(x => x.json()).then(data => {
-            SiteBuilder.init({
-                container: container,
-                schema: SiteBuilder.defaultSchema,
-                thumbnailsUrl: site + "/static/files",
-                fileManager: FileManager({
-                    api: site,
-                    thumbnailsUrl: site + "/static/files",
-                    uploadsUrl: site + "/upload",
-                    downloadsUrl: site + "/static/files",
-                }),
-                data: data
-            });
-        });
-    </script>
-
 </body>
+
+<script>
+    const site = "http://localhost:3001";
+
+    fetch(site + "/static/data.json").then(x => x.json()).then(data => {
+        SiteBuilder.init({
+            container: container,
+            schema: SiteBuilder.defaultSchema,
+            thumbnailsUrl: site + "/static/files",
+            fileManager: FileManager({
+                api: site,
+                thumbnailsUrl: site + "/static/files",
+                uploadsUrl: site + "/upload",
+                downloadsUrl: site + "/static/files",
+            }),
+            data: data
+        });
+    });
+</script>
+
 </html>

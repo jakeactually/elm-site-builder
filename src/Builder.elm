@@ -8,12 +8,14 @@ import Vec exposing (Vec2(..))
 type Column = Column
   { form : Form
   , rows : List Row
+  , isTarget : Bool
   }
 
 newColumn : Column
 newColumn = Column
   { form = columnForm
   , rows = []
+  , isTarget = False
   }
 
 columnForm : Form
@@ -62,7 +64,10 @@ type ColumnMsg
   | SaveColumn Form
   | GoLeft
   | GoRight
-  | DeleteColumn
+  | DeleteColumn  
+  | ColumnGapMouseOver
+  | ColumnGapMouseOut
+  | ColumnGapMouseUp
   | NoColumnMsg
   | RowMsg Int RowMsg
 

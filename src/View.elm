@@ -41,15 +41,17 @@ toPx n = fromFloat n ++ "px"
 
 addRow : Html ColumnMsg
 addRow = div [ class "sb-add-bar" ]
-  [ button [ onClick <| AddBlock <| Form "Row" [], title "Add row" ] [ text "+" ]
+  [ button [ onClick <| AddRow, title "Add row" ] [ text "+" ]
   ]
 
 renderColumn : Model -> Int -> Int -> Column -> Html RowMsg
-renderColumn model basis i (Column { form, rows } as column) = Html.map (ColumnMsg i) <| div
+renderColumn model basis i (Column { form, rows, isTarget } as column) = Html.map (ColumnMsg i) <| div
   [ class "sb-column"
   , class <| "sb-basis-" ++ fromInt basis
-  ]
-  <| columnControl column :: indexedMap (renderRow model) rows
+  ] <|
+    if length rows > 0
+      then columnControl column :: indexedMap (renderRow model) rows
+      else [ columnControl column, columnGap isTarget ]
 
 columnControl : Column -> Html ColumnMsg
 columnControl (Column { form }) = div [ class "sb-column-control" ]
@@ -71,6 +73,17 @@ renderTopRow model i (Row { form, columns }) = Html.map (RowMsg i) <| div [ clas
   , div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
   ]
 
+columnGap : Bool -> Html ColumnMsg
+columnGap isTarget = div [ class "sb-gap" ]
+  [ div
+    [ class "sb-dropzone"
+    , onMouseOver <| ColumnGapMouseOver
+    , onMouseOut <| ColumnGapMouseOut
+    , onMouseUp <| ColumnGapMouseUp
+    ] []
+  , div [ class <| if isTarget then "sb-light" else "" ] []
+  ]
+
 renderRow : Model -> Int -> Row -> Html ColumnMsg
 renderRow model i (Row { isBlock, form, columns, isTarget } as row) = Html.map (RowMsg i) <| div []
   [ div
@@ -80,10 +93,10 @@ renderRow model i (Row { isBlock, form, columns, isTarget } as row) = Html.map (
     ]
     [ rowControl row
     , if isBlock
-      then div []
+      then div [ class "sb-body" ]
         [ let (Form name fields) = form in case name of
           "Text" -> toHtmlWith { defaultOptions | sanitize = False } [] <| getStringAt 0 fields 
-          _ -> text <| getStringAt 0 fields 
+          _ -> text <| getStringAt 0 fields
         ]
       else div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
     ]
@@ -96,9 +109,7 @@ rowGap model isTarget = div [ class "sb-gap" ]
     [ class "sb-dropzone"
     , onMouseOver <| GapMouseOver
     , onMouseOut <| GapMouseOut
-    , onMouseUp <| case model.currentRow of
-        Just r -> GapMouseUp
-        Nothing -> NoRowMsg
+    , onMouseUp <| GapMouseUp
     ] []
   , div [ class <| if isTarget then "sb-light" else "" ] []
   ]

@@ -64,6 +64,7 @@ buildColumn : String -> String -> List Row -> Column
 buildColumn id class rows = Column
   { form = Form "Column" [ Field "id" <| TextValue id, Field "class" <| TextValue class ]
   , rows = rows
+  , isTarget = False
   }
 
 maybeRowDecoder : Schema -> Decode.Decoder Row

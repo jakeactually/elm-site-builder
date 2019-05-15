@@ -9,6 +9,57 @@
                 "class": "bbb",
                 "rows": [
                     {
+                        "type": "Text",
+                        "content": "<p>aaaaaaaaa</p>",
+                        "className": ""
+                    },
+                    {
+                        "type": "Text",
+                        "content": "<p>aaaaaaaaaaaa</p>",
+                        "className": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "Row",
+        "id": "aaa",
+        "class": "aaa",
+        "columns": [
+            {
+                "id": "bbb",
+                "class": "bbb",
+                "rows": [
+                    {
+                        "type": "Text",
+                        "content": "<p>aaaaaaaaa</p>",
+                        "className": ""
+                    },
+                    {
+                        "type": "Text",
+                        "content": "<p>aaaaaaaaaaaa</p>",
+                        "className": ""
+                    }
+                ]
+            },
+            {
+                "id": "",
+                "class": "",
+                "rows": []
+            }
+        ]
+    },
+    {
+        "type": "Row",
+        "id": "",
+        "class": "",
+        "columns": [
+            {
+                "id": "",
+                "class": "",
+                "rows": [
+                    {
                         "type": "Row",
                         "id": "",
                         "class": "",
@@ -18,11 +69,9 @@
                                 "class": "",
                                 "rows": [
                                     {
-                                        "type": "Gallery",
-                                        "images": [
-                                            "/Image 2.jpg",
-                                            "/Image 1.jpg"
-                                        ]
+                                        "type": "Text",
+                                        "content": "<p>aaaaaaaaa</p>",
+                                        "className": ""
                                     }
                                 ]
                             },
@@ -31,20 +80,14 @@
                                 "class": "",
                                 "rows": [
                                     {
-                                        "type": "Image",
-                                        "image": "/Image 2.jpg",
-                                        "className": ""
+                                        "type": "Html",
+                                        "html": "aaaaaaaaa"
                                     }
                                 ]
                             }
                         ]
                     }
                 ]
-            },
-            {
-                "id": "",
-                "class": "",
-                "rows": []
             }
         ]
     }
