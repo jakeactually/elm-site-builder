@@ -1,52 +1,18 @@
 [
     {
         "type": "Row",
-        "id": "aaa",
-        "class": "aaa",
+        "id": "",
+        "class": "",
         "columns": [
-            {
-                "id": "bbb",
-                "class": "bbb",
-                "rows": [
-                    {
-                        "type": "Text",
-                        "content": "<p>aaaaaaaaa</p>",
-                        "className": ""
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<p>aaaaaaaaaaaa</p>",
-                        "className": ""
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "type": "Row",
-        "id": "aaa",
-        "class": "aaa",
-        "columns": [
-            {
-                "id": "bbb",
-                "class": "bbb",
-                "rows": [
-                    {
-                        "type": "Text",
-                        "content": "<p>aaaaaaaaa</p>",
-                        "className": ""
-                    },
-                    {
-                        "type": "Text",
-                        "content": "<p>aaaaaaaaaaaa</p>",
-                        "className": ""
-                    }
-                ]
-            },
             {
                 "id": "",
                 "class": "",
-                "rows": []
+                "rows": [
+                    {
+                        "type": "Title",
+                        "text": "My title"
+                    }
+                ]
             }
         ]
     },
@@ -60,32 +26,67 @@
                 "class": "",
                 "rows": [
                     {
-                        "type": "Row",
-                        "id": "",
-                        "class": "",
-                        "columns": [
-                            {
-                                "id": "",
-                                "class": "",
-                                "rows": [
-                                    {
-                                        "type": "Text",
-                                        "content": "<p>aaaaaaaaa</p>",
-                                        "className": ""
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "",
-                                "class": "",
-                                "rows": [
-                                    {
-                                        "type": "Html",
-                                        "html": "aaaaaaaaa"
-                                    }
-                                ]
-                            }
-                        ]
+                        "type": "Text",
+                        "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod diam sed velit varius, vitae tempor ex molestie. In hac habitasse platea dictumst. Fusce sed mauris nibh. Ut vestibulum, neque quis condimentum tempor, tortor dui finibus augue, quis maximus sapien dui in ligula. Fusce efficitur augue vitae justo sagittis, ut maximus ex ultricies. Duis bibendum eu enim quis vehicula. Vivamus augue justo, sollicitudin a mollis id, venenatis at libero. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec iaculis elit ac facilisis dictum. Suspendisse ornare iaculis enim. Quisque semper massa et tellus blandit, ut gravida orci malesuada. Praesent venenatis odio quis hendrerit facilisis. Phasellus congue orci elit, vel hendrerit velit hendrerit et. Duis consectetur condimentum lacus eu eleifend. Pellentesque ultricies ut diam eget scelerisque. Donec porta nibh magna, quis accumsan risus dictum et.</p>",
+                        "className": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "Row",
+        "id": "",
+        "class": "",
+        "columns": [
+            {
+                "id": "",
+                "class": "",
+                "rows": [
+                    {
+                        "type": "Image",
+                        "image": "/Image 1.jpg",
+                        "className": ""
+                    }
+                ]
+            },
+            {
+                "id": "",
+                "class": "",
+                "rows": [
+                    {
+                        "type": "Text",
+                        "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod diam sed velit varius, vitae tempor ex molestie. In hac habitasse platea dictumst. Fusce sed mauris nibh. Ut vestibulum, neque quis condimentum tempor, tortor dui finibus augue, quis maximus sapien dui in ligula. Fusce efficitur augue vitae justo sagittis, ut maximus ex ultricies. Duis bibendum eu enim quis vehicula. Vivamus augue justo, sollicitudin a mollis id, venenatis at libero. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec iaculis elit ac facilisis dictum. Suspendisse ornare iaculis enim. Quisque semper massa et tellus blandit, ut gravida orci malesuada. Praesent venenatis odio quis hendrerit facilisis. Phasellus congue orci elit, vel hendrerit velit hendrerit et. Duis consectetur condimentum lacus eu eleifend. Pellentesque ultricies ut diam eget scelerisque. Donec porta nibh magna, quis accumsan risus dictum et.</p>",
+                        "className": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "Row",
+        "id": "",
+        "class": "",
+        "columns": [
+            {
+                "id": "",
+                "class": "",
+                "rows": [
+                    {
+                        "type": "Text",
+                        "content": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod diam sed velit varius, vitae tempor ex molestie. In hac habitasse platea dictumst. Fusce sed mauris nibh. Ut vestibulum, neque quis condimentum tempor, tortor dui finibus augue, quis maximus sapien dui in ligula. Fusce efficitur augue vitae justo sagittis, ut maximus ex ultricies. Duis bibendum eu enim quis vehicula. Vivamus augue justo, sollicitudin a mollis id, venenatis at libero. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec iaculis elit ac facilisis dictum. Suspendisse ornare iaculis enim. Quisque semper massa et tellus blandit, ut gravida orci malesuada. Praesent venenatis odio quis hendrerit facilisis. Phasellus congue orci elit, vel hendrerit velit hendrerit et. Duis consectetur condimentum lacus eu eleifend. Pellentesque ultricies ut diam eget scelerisque. Donec porta nibh magna, quis accumsan risus dictum et.</p>",
+                        "className": ""
+                    }
+                ]
+            },
+            {
+                "id": "",
+                "class": "",
+                "rows": [
+                    {
+                        "type": "Image",
+                        "image": "/Image 1.jpg",
+                        "className": ""
                     }
                 ]
             }

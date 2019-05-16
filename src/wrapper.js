@@ -11,6 +11,13 @@ var SiteBuilder = function () {
       title: "Class"
     }]
   }, {
+    name: "Title",
+    fields: [{
+      type: 'Text',
+      id: 'text',
+      title: "Text"
+    }]
+  }, {
     name: "Image",
     fields: [{
       type: 'Image',
