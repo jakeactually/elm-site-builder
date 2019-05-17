@@ -1,5 +1,5 @@
 # elm-site-builder
-A backend agnostic site builder. Written in Elm. [Demo](http://jakeactually.com:3001/static/index.html).
+A backend agnostic site builder. Written in Elm. [Demo](http://jakeactually.com:3001/static/index.html)
 
 # How to
 Include [site-builder.css](https://github.com/jakeactually/elm-site-builder/blob/master/dist/site-builder.css) and [site-builder.js](https://github.com/jakeactually/elm-site-builder/blob/master/dist/site-builder.js) in your html. Then you can inject it like this:
