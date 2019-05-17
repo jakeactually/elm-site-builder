@@ -70,7 +70,7 @@ renderTopRow model i (Row { form, columns, isTarget } as row) = Html.map (RowMsg
   , onMouseUp <| RowMouseUp
   ]
   [ div [ class "sb-block-head" ]
-    [ button [ class "sb-icon", title "Add column", onMouseDown <| RowMouseDown row ] [ Icons.move ]
+    [ button [ class "sb-icon", title "Add column", onMouseDown <| RowMouseDown row True ] [ Icons.move ]
     , buttonIcon Icons.edit "Edit row" <| EditRow form
     , buttonIcon Icons.copy "Duplicate" Duplicate
     , buttonIcon Icons.delete "Delete row" Delete
@@ -94,7 +94,7 @@ renderRow : Model -> Int -> Row -> Html ColumnMsg
 renderRow model i (Row { isBlock, form, columns, isTarget } as row) = Html.map (RowMsg i) <| div []
   [ div
     [ class "sb-block"
-    , onMouseDown <| RowMouseDown row
+    , onMouseDown <| RowMouseDown row False
     , onMouseUp <| RowMouseUp
     ]
     [ rowControl row

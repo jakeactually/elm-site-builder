@@ -28,6 +28,7 @@ type alias Model =
   , currentColumnMsg : ColumnMsg
   , pointer : ColumnMsg
   , currentRow : Maybe Row
+  , currentRowIsTop : Bool
   , currentForm : Form
   , currentFieldIndex : Int
   , start : Vec2
@@ -49,6 +50,7 @@ initModel flags = let decodedSchema = withDefault empty <| decodeValue decodeSch
   , currentColumnMsg = NoColumnMsg
   , pointer = NoColumnMsg
   , currentRow = Nothing
+  , currentRowIsTop = False
   , currentForm = Form "" []
   , currentFieldIndex = 0
   , start = Vec2 0 0

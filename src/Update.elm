@@ -34,9 +34,10 @@ evalRowMsg : RowMsg -> Model -> Model
 evalRowMsg rowMsg model = case rowMsg of
   EditRow form -> edit form (Ok Save) model
   GapMouseUp -> reset model
-  RowMouseDown row position ->
+  RowMouseDown row isTop position ->
     { model
     | currentRow = Just row
+    , currentRowIsTop = isTop
     , pointer = model.currentColumnMsg
     , start = position
     }
@@ -59,7 +60,7 @@ updateColumn model columnMsg (Column column) = Column <| case columnMsg of
   AddBlock form -> { column | rows = column.rows ++ [ setForm form <| setIsBlock True <| newRow ] }
   AddRow -> { column | rows = column.rows ++ [ setColumns [ newColumn ] <| setIsBlock False <| newRow ] }
   SaveColumn form -> { column | form = form }
-  ColumnGapMouseOver isTop -> { column | isTarget = canBeTarget isTop model.currentRow }
+  ColumnGapMouseOver isTop -> { column | isTarget = canBeTarget isTop model }
   ColumnGapMouseOut -> { column | isTarget = False }
   ColumnGapMouseUp -> { column | isTarget = False , rows = Util.maybeToList model.currentRow ++ column.rows }
   RowMsg i rowMsg -> case rowMsg of
@@ -75,7 +76,7 @@ updateRow : Model -> RowMsg -> Row -> Row
 updateRow model rowMsg (Row row) = Row <| case rowMsg of
   AddColumn -> { row | columns = if length row.columns < 4 then row.columns ++ [ newColumn ] else row.columns }
   Save form  -> { row | form = form }
-  GapMouseOver isTop -> { row | isTarget = canBeTarget isTop model.currentRow }
+  GapMouseOver isTop -> { row | isTarget = canBeTarget isTop model }
   GapMouseOut -> { row | isTarget = False }
   ColumnMsg i columnMsg -> case columnMsg of
     GoLeft -> { row | columns = Util.swap i (i - 1) row.columns }
@@ -84,9 +85,12 @@ updateRow model rowMsg (Row row) = Row <| case rowMsg of
     _ -> { row | columns = Util.update (updateColumn model columnMsg) i row.columns }
   _ -> row
 
-canBeTarget : Bool -> Maybe Row -> Bool
-canBeTarget isTop maybeRow = case maybeRow of
-    Just (Row row) -> not <| isTop && row.isBlock
+canBeTarget : Bool -> Model -> Bool
+canBeTarget isTopGap model = case model.currentRow of
+    -- Design choice for simplicity
+    -- Top levels rows can only interact with top level gaps
+    -- And low level blocks can only interact with low level gaps
+    Just (Row row) -> model.currentRowIsTop == isTopGap
     _ -> False
 
 reset : Model -> Model

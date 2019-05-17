@@ -77,7 +77,7 @@ type RowMsg
   | EditRow Form
   | Duplicate
   | Delete
-  | RowMouseDown Row Vec2
+  | RowMouseDown Row Bool Vec2
   | RowMouseUp
   | GapMouseOver Bool
   | GapMouseOut

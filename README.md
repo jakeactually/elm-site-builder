@@ -21,8 +21,6 @@ SiteBuilder.init({
 });
 ```
 
-This **must** come after the opening body tag.
-
 ## Required
 - **container** a node to insert the site builder.
 - **thumbnailsUrl** a url for thumbnails. It gets the image name appended. Here is just a static server.
