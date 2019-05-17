@@ -5,8 +5,8 @@ import Dialogs exposing (editBlockDialog, selectBlockDialog)
 import Events exposing (..)
 import Field.Util exposing (..)
 import Field.View exposing (..)
-import Html exposing (Html, textarea, button, div, input, strong, text)
-import Html.Attributes as A exposing (attribute, class, draggable, id, style, title, type_, value)
+import Html exposing (Html, textarea, button, div, img, input, strong, text)
+import Html.Attributes as A exposing (attribute, class, draggable, id, src, style, title, type_, value)
 import Html.Events exposing (onClick)
 import Json as J
 import Json.Encode as E
@@ -19,13 +19,16 @@ import Util exposing (isJust)
 import Vec exposing (Vec2(..))
 
 view : Model -> Html Msg
-view model = let (Column { rows }) = model.column in div
+view model = let (Column { rows, isTarget }) = model.column in div
   [ class "sb-main"
   , class <| if model.dragging then "sb-dragging" else ""
   , onMouseMove <| ContextMsg << MouseMove
   , onMouseUp <| ContextMsg MouseUp
   ]
-  [ Html.map BuilderMsg <| div [ class "column" ] <| indexedMap (renderTopRow model) rows ++ [ addRow ]
+  [ Html.map BuilderMsg
+      <| div [ class "column" ]
+      <| columnGap isTarget True
+      :: indexedMap (renderTopRow model) rows ++ [ addRow ]
   , if model.showSelectBlockDialog then selectBlockDialog model.schema else div [] []
   , if model.showEditBlockDialog then editBlockDialog model.currentForm model.thumbnailsUrl else div [] []
   , input [ id "sb-value", type_ "hidden", value <| E.encode 4 <| J.encode model.schema <| model.column ] []
@@ -48,10 +51,8 @@ renderColumn : Model -> Int -> Int -> Column -> Html RowMsg
 renderColumn model basis i (Column { form, rows, isTarget } as column) = Html.map (ColumnMsg i) <| div
   [ class "sb-column"
   , class <| "sb-basis-" ++ fromInt basis
-  ] <|
-    if length rows > 0
-      then columnControl column :: indexedMap (renderRow model) rows
-      else [ columnControl column, columnGap isTarget ]
+  ]
+  <| columnControl column :: columnGap isTarget False :: indexedMap (renderRow model) rows
 
 columnControl : Column -> Html ColumnMsg
 columnControl (Column { form }) = div [ class "sb-column-control" ]
@@ -63,21 +64,26 @@ columnControl (Column { form }) = div [ class "sb-column-control" ]
   ]
 
 renderTopRow : Model -> Int -> Row -> Html ColumnMsg
-renderTopRow model i (Row { form, columns }) = Html.map (RowMsg i) <| div [ class "sb-top-block" ]
+renderTopRow model i (Row { form, columns, isTarget } as row) = Html.map (RowMsg i) <|
+  div
+  [ class "sb-top-block"
+  , onMouseUp <| RowMouseUp
+  ]
   [ div [ class "sb-block-head" ]
-    [ buttonIcon Icons.addColumn "Add column" AddColumn
+    [ button [ class "sb-icon", title "Add column", onMouseDown <| RowMouseDown row ] [ Icons.move ]
     , buttonIcon Icons.edit "Edit row" <| EditRow form
     , buttonIcon Icons.copy "Duplicate" Duplicate
     , buttonIcon Icons.delete "Delete row" Delete
     ]
-  , div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
+  , div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns)  columns
+  , rowGap model isTarget True
   ]
 
-columnGap : Bool -> Html ColumnMsg
-columnGap isTarget = div [ class "sb-gap" ]
+columnGap : Bool -> Bool ->  Html ColumnMsg
+columnGap isTarget isTop = div [ class "sb-gap" ]
   [ div
     [ class "sb-dropzone"
-    , onMouseOver <| ColumnGapMouseOver
+    , onMouseOver <| ColumnGapMouseOver isTop
     , onMouseOut <| ColumnGapMouseOut
     , onMouseUp <| ColumnGapMouseUp
     ] []
@@ -95,19 +101,20 @@ renderRow model i (Row { isBlock, form, columns, isTarget } as row) = Html.map (
     , if isBlock
       then div [ class "sb-body" ]
         [ let (Form name fields) = form in case name of
-          "Text" -> toHtmlWith { defaultOptions | sanitize = False } [] <| getStringAt 0 fields 
+          "Text" -> toHtmlWith { defaultOptions | sanitize = False } [] <| getStringAt 0 fields
+          "Image" -> img [ src <| model.thumbnailsUrl ++ getStringAt 0 fields ] []
           _ -> text <| getStringAt 0 fields
         ]
       else div [ class "sb-columns" ] <| indexedMap (renderColumn model <| 12 // length columns) columns
     ]
-  , rowGap model isTarget
+  , rowGap model isTarget False
   ]
 
-rowGap : Model -> Bool -> Html RowMsg
-rowGap model isTarget = div [ class "sb-gap" ]
+rowGap : Model -> Bool -> Bool -> Html RowMsg
+rowGap model isTarget isTop = div [ class "sb-gap" ]
   [ div
     [ class "sb-dropzone"
-    , onMouseOver <| GapMouseOver
+    , onMouseOver <| GapMouseOver isTop
     , onMouseOut <| GapMouseOut
     , onMouseUp <| GapMouseUp
     ] []

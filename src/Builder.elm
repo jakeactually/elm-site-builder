@@ -65,7 +65,7 @@ type ColumnMsg
   | GoLeft
   | GoRight
   | DeleteColumn  
-  | ColumnGapMouseOver
+  | ColumnGapMouseOver Bool
   | ColumnGapMouseOut
   | ColumnGapMouseUp
   | NoColumnMsg
@@ -79,7 +79,7 @@ type RowMsg
   | Delete
   | RowMouseDown Row Vec2
   | RowMouseUp
-  | GapMouseOver
+  | GapMouseOver Bool
   | GapMouseOut
   | GapMouseUp
   | NoRowMsg
