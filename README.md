@@ -1,23 +1,27 @@
 # elm-site-builder
-A backend agnostic site builder. Written in Elm. [Demo](http://jakeactually.com:3001/static/index.html)
+A backend agnostic site builder. Written in Elm. [Demo](https://jakeactually.com/elm-site-builder/)
 
 # How to
 Include [site-builder.css](https://github.com/jakeactually/elm-site-builder/blob/master/dist/site-builder.css) and [site-builder.js](https://github.com/jakeactually/elm-site-builder/blob/master/dist/site-builder.js) in your html. Then you can inject it like this:
 
 ```javascript
-const site = "http://localhost:3001";
+const site = "https://jakeactually.com";
 
-SiteBuilder.init({
-    container: container,
-    schema: SiteBuilder.defaultSchema,
-    thumbnailsUrl: site + "/static/files",
-    fileManager: FileManager({
-        api: site,
-        thumbnailsUrl: site + "/static/files",
-        uploadsUrl: site + "/upload",
-        downloadsUrl: site + "/static/files",
-    }),
-    data:  ``
+const fileManager = FileManager({
+    api: site + '/file-api',
+    thumbnailsUrl: site + "/files",
+    uploadsUrl: site + "/file-api/upload",
+    downloadsUrl: site + "/files",
+});
+
+fetch(site + "/elm-site-builder/data.json").then(x => x.json()).then(data => {
+    SiteBuilder.init({
+        container,
+        schema: SiteBuilder.defaultSchema,
+        thumbnailsUrl: site + "/files",
+        fileManager,
+        data
+    });
 });
 ```
 
